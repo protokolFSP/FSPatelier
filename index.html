@@ -4344,10 +4344,10 @@ loadItems = async function(){
     : decodeSafe(raw);
 
   // ✅ normalize to match IA filenames that may use decomposed chars
-  return decoded
-    .replace(/\.(m4a|mp3)$/i, ".pdf")
-    .normalize("NFC")
-    .trim();
+ return decoded
+  .replace(/\.(m4a|mp3)$/i, ".pdf")
+  .normalize("NFC")
+  .trim();
 }
 
   function buildPdfDownloadUrl(pdfName){
@@ -4376,7 +4376,7 @@ loadItems = async function(){
       for (const f of files){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
-       const base = decodeSafe(name.split("/").pop() || name)
+       const base = decodeSafe(name.split("/").pop() || name).normalize("NFC").trim();
   .normalize("NFC")
   .trim();
         if (base) set.add(base);
@@ -4441,8 +4441,8 @@ loadItems = async function(){
             e.stopPropagation();
             if (pdfBtn.disabled) return;
             const pdfName = buildPdfNameForItem(it);
-            const url = buildPdfDownloadUrl(pdfName);
-            window.open(url, "_blank", "noopener");
+           const url = `https://archive.org/details/${encodeURIComponent(PDF_IA_IDENTIFIER)}?filename=${encodeURIComponent(pdfName)}`;
+          window.open(url, "_blank", "noopener");
           });
           row.appendChild(pdfBtn); // last column
         } else {
