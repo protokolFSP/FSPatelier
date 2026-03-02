@@ -4284,14 +4284,15 @@ loadItems = async function(){
     loadItems();
     setTimeout(() => checkSrtAvailability().catch(()=>{}), 1200);
   </script>
- <script>
+<script>
 (function fspPdfAddon(){
   "use strict";
 
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  let pdfNameSet = new Set(); // decoded basenames: "... .pdf"
+  // key: normalized basename (NFC) -> value: original decoded basename as in IA (may be NFD)
+  let pdfNameMap = new Map();
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
@@ -4299,21 +4300,90 @@ loadItems = async function(){
     try { return decodeURIComponent(s); } catch { return String(s || ""); }
   }
 
+  function normKey(s){
+    return String(s || "").normalize("NFC").trim();
+  }
+
   function ensurePdfCss(){
-    if (document.getElementById("pdf-addon-css")) return;
-    const style = document.createElement("style");
-    style.id = "pdf-addon-css";
-    style.textContent = `
-      .headerRow, .itemRow{
-        grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
-      }
-      @media (max-width: 680px){
+    if (!document.getElementById("pdf-addon-css")) {
+      const style = document.createElement("style");
+      style.id = "pdf-addon-css";
+      style.textContent = `
         .headerRow, .itemRow{
-          grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px !important;
+          grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
         }
-      }
-    `;
-    document.head.appendChild(style);
+        @media (max-width: 680px){
+          .headerRow, .itemRow{
+            grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px !important;
+          }
+        }
+
+        /* simple PDF overlay */
+        #pdfOverlay{
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,.25);
+          z-index: 10080;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 14px;
+        }
+        #pdfOverlay.open{ display: flex; }
+        #pdfPanel{
+          width: min(1100px, calc(100vw - 28px));
+          height: min(88vh, 900px);
+          background: #fff;
+          border: 1.5px solid #d6d6d6;
+          border-right-color: #bdbdbd;
+          border-bottom-color:#b3b3b3;
+          border-radius: 18px;
+          box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        #pdfPanelHeader{
+          padding: 10px 12px;
+          background: #fbfbfb;
+          display:flex;
+          align-items:center;
+          justify-content: space-between;
+          gap: 10px;
+          border-bottom: 1px solid #ececec;
+          line-height: 1.05;
+        }
+        #pdfPanelTitle{
+          font-weight: 750;
+          font-size: 1rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        #pdfCloseBtn{
+          width: 40px;
+          height: 36px;
+          border-radius: 12px;
+          border: 1px solid #d8d8d8;
+          background: white;
+          cursor: pointer;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          user-select:none;
+        }
+        #pdfCloseBtn:hover{ background: #f7f7f7; }
+        #pdfFrame{
+          width: 100%;
+          height: 100%;
+          border: 0;
+          background: #fff;
+        }
+      `;
+      document.head.appendChild(style);
+    }
   }
 
   function ensureHeaderCell(){
@@ -4330,25 +4400,88 @@ loadItems = async function(){
     hdr.appendChild(cell);
   }
 
-  function buildPdfNameForItem(it){
+  function ensurePdfOverlay(){
+    if (document.getElementById("pdfOverlay")) return;
+
+    const ov = document.createElement("div");
+    ov.id = "pdfOverlay";
+    ov.setAttribute("aria-hidden","true");
+
+    const panel = document.createElement("div");
+    panel.id = "pdfPanel";
+    panel.addEventListener("click", (e) => e.stopPropagation());
+
+    const head = document.createElement("div");
+    head.id = "pdfPanelHeader";
+
+    const title = document.createElement("div");
+    title.id = "pdfPanelTitle";
+    title.textContent = "PDF";
+
+    const close = document.createElement("button");
+    close.id = "pdfCloseBtn";
+    close.type = "button";
+    close.title = "Kapat";
+    close.textContent = "✕";
+
+    const frame = document.createElement("iframe");
+    frame.id = "pdfFrame";
+    frame.setAttribute("loading","lazy");
+
+    close.addEventListener("click", () => closePdf());
+    ov.addEventListener("click", () => closePdf());
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && ov.classList.contains("open")) closePdf();
+    });
+
+    head.appendChild(title);
+    head.appendChild(close);
+    panel.appendChild(head);
+    panel.appendChild(frame);
+    ov.appendChild(panel);
+    document.body.appendChild(ov);
+  }
+
+  function openPdf(titleText, url){
+    ensurePdfOverlay();
+    const ov = document.getElementById("pdfOverlay");
+    const t = document.getElementById("pdfPanelTitle");
+    const f = document.getElementById("pdfFrame");
+    if (!ov || !t || !f) return;
+
+    t.textContent = titleText || "PDF";
+    f.src = url;
+
+    ov.classList.add("open");
+    ov.setAttribute("aria-hidden","false");
+  }
+
+  function closePdf(){
+    const ov = document.getElementById("pdfOverlay");
+    const f = document.getElementById("pdfFrame");
+    if (!ov) return;
+    ov.classList.remove("open");
+    ov.setAttribute("aria-hidden","true");
+    if (f) f.src = "about:blank";
+  }
+
+  function buildPdfNameKeyForItem(it){
     const raw = (it?.name || "").split("/").pop() || "";
     const decoded = (typeof window.decodeURIComponentSafe === "function")
       ? window.decodeURIComponentSafe(raw)
       : decodeSafe(raw);
 
-    return decoded
-      .replace(/\.(m4a|mp3)$/i, ".pdf")
-      .normalize("NFC")
-      .trim();
+    return normKey(decoded.replace(/\.(m4a|mp3)$/i, ".pdf"));
   }
 
-  function hasPdfForItem(it){
-    return pdfNameSet.has(buildPdfNameForItem(it));
+  function getPdfOriginalNameForItem(it){
+    const key = buildPdfNameKeyForItem(it);
+    return pdfNameMap.get(key) || null;
   }
 
   async function loadPdfIndex(force){
     const now = Date.now();
-    if (!force && pdfNameSet.size > 0 && (now - pdfLoadedAt) < PDF_TTL_MS) return;
+    if (!force && pdfNameMap.size > 0 && (now - pdfLoadedAt) < PDF_TTL_MS) return;
     if (pdfLoading) return;
     pdfLoading = true;
 
@@ -4359,22 +4492,20 @@ loadItems = async function(){
       const j = await res.json();
       const files = Array.isArray(j.files) ? j.files : [];
 
-      const set = new Set();
+      const map = new Map();
       for (const f of files){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
 
-        const base = decodeSafe(name.split("/").pop() || name)
-          .normalize("NFC")
-          .trim();
-
-        if (base) set.add(base);
+        const baseOriginal = decodeSafe(name.split("/").pop() || name).trim(); // keep original codepoints
+        const key = normKey(baseOriginal);
+        if (key && baseOriginal) map.set(key, baseOriginal);
       }
 
-      pdfNameSet = set;
+      pdfNameMap = map;
       pdfLoadedAt = now;
     }catch{
-      // sessiz
+      // silent
     }finally{
       pdfLoading = false;
     }
@@ -4404,11 +4535,13 @@ loadItems = async function(){
       e.stopPropagation();
       if (btn.disabled) return;
 
-      const pdfName = buildPdfNameForItem(it);
+      const originalPdfName = getPdfOriginalNameForItem(it);
+      if (!originalPdfName) return;
 
-      // ✅ direct file URL (IA UI yok)
-      const url = `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(pdfName)}`;
-      window.open(url, "_blank", "noopener");
+      // ✅ direct file URL with IA-original filename (prevents 404 from NFC/NFD mismatch)
+      const url = `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(originalPdfName)}`;
+
+      openPdf(it?.title || originalPdfName, url);
     });
 
     return btn;
@@ -4431,7 +4564,7 @@ loadItems = async function(){
       if (!row || !it) continue;
 
       let pdfBtn = row.querySelector("button.iconBtn[data-kind='pdf']");
-      const exists = hasPdfForItem(it);
+      const exists = !!getPdfOriginalNameForItem(it);
 
       if (!pdfBtn){
         pdfBtn = makePdfButton(exists, it);
@@ -4455,6 +4588,7 @@ loadItems = async function(){
   function init(){
     ensurePdfCss();
     ensureHeaderCell();
+    ensurePdfOverlay();
 
     wrapOnce("loadItems", (orig) => async function(){
       const p = orig.apply(this, arguments);
