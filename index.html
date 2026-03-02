@@ -4285,39 +4285,34 @@ loadItems = async function(){
     setTimeout(() => checkSrtAvailability().catch(()=>{}), 1200);
   </script>
 <script>
-(function fspPdfAddon(){
+(function fspPdfAddonPdfJs(){
   "use strict";
 
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // key: normalized basename (NFC) -> value: original decoded basename as in IA (may be NFD)
+  // key: normalized basename (NFC) -> original basename (as IA lists it; can be NFD)
   let pdfNameMap = new Map();
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
-  // keep last opened pdf info for download button
+  // state
   let lastPdf = { title: "", url: "", filename: "" };
+  let renderAbort = { aborted: false };
   let prevBodyOverflow = "";
 
   function decodeSafe(s){
     try { return decodeURIComponent(s); } catch { return String(s || ""); }
   }
-
   function normKey(s){
     return String(s || "").normalize("NFC").trim();
   }
 
-  function isMobile(){
-    return window.matchMedia && window.matchMedia("(max-width: 680px)").matches;
-  }
-
-  function ensurePdfCss(){
+  function ensureCss(){
     if (document.getElementById("pdf-addon-css")) return;
-
-    const style = document.createElement("style");
-    style.id = "pdf-addon-css";
-    style.textContent = `
+    const st = document.createElement("style");
+    st.id = "pdf-addon-css";
+    st.textContent = `
       .headerRow, .itemRow{
         grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
       }
@@ -4327,111 +4322,114 @@ loadItems = async function(){
         }
       }
 
-      /* PDF overlay */
+      /* Overlay */
       #pdfOverlay{
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,.25);
         z-index: 10080;
         display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 14px;
-        touch-action: none; /* prevent background gestures */
+        background: rgba(0,0,0,.28);
+        touch-action: none;
       }
-      #pdfOverlay.open{ display: flex; }
+      #pdfOverlay.open{ display: block; }
 
       #pdfPanel{
-        width: min(1100px, calc(100vw - 28px));
-        height: min(88vh, 900px);
+        position: absolute;
+        inset: 0;
         background: #fff;
-        border: 1.5px solid #d6d6d6;
-        border-right-color: #bdbdbd;
-        border-bottom-color:#b3b3b3;
-        border-radius: 18px;
-        box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
-        overflow: hidden;
         display: flex;
         flex-direction: column;
-        touch-action: auto;
       }
 
       #pdfPanelHeader{
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
         padding: 10px 12px;
         background: #fbfbfb;
-        display:flex;
-        align-items:center;
-        justify-content: space-between;
-        gap: 10px;
         border-bottom: 1px solid #ececec;
-        line-height: 1.05;
-        flex: 0 0 auto;
       }
 
       #pdfPanelTitle{
+        flex: 1 1 auto;
+        min-width: 0;
         font-weight: 750;
         font-size: 1rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        flex: 1 1 auto;
-        min-width: 0;
       }
 
       #pdfPanelBtns{
-        display:flex;
-        gap: 8px;
         flex: 0 0 auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
       }
 
-      .pdfMiniBtn{
-        width: 40px;
-        height: 36px;
-        border-radius: 12px;
+      .pdfBigBtn{
+        height: 44px;
+        min-width: 52px;
+        padding: 0 14px;
+        border-radius: 14px;
         border: 1px solid #d8d8d8;
-        background: white;
+        background: #fff;
+        font-weight: 800;
+        font-size: 16px;
         cursor: pointer;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        user-select:none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
         text-decoration: none;
         color: #111;
+        -webkit-tap-highlight-color: transparent;
       }
-      .pdfMiniBtn:hover{ background: #f7f7f7; }
-      .pdfMiniBtn:disabled{ opacity: .45; cursor: default; }
+      .pdfBigBtn:hover{ background: #f7f7f7; }
+      .pdfBigBtn:active{ transform: translateY(1px); }
 
-      #pdfFrame{
-        width: 100%;
-        height: 100%;
-        border: 0;
-        background: #fff;
+      #pdfBody{
+        flex: 1 1 auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: #f2f2f2;
+        padding: 10px;
         touch-action: pan-y pan-x;
       }
 
-      /* Mobile: full-screen panel, no gaps */
+      #pdfCanvasWrap{
+        display: grid;
+        gap: 10px;
+        justify-items: center;
+      }
+
+      .pdfPage{
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 22px rgba(0,0,0,.10);
+        overflow: hidden;
+      }
+
+      .pdfHint{
+        color: #666;
+        font-size: 14px;
+        padding: 10px 0 0 0;
+        text-align: center;
+      }
+
       @media (max-width: 680px){
-        #pdfOverlay{ padding: 0; }
-        #pdfPanel{
-          width: 100vw;
-          height: 100svh;  /* better on mobile address-bar */
-          border-radius: 0;
-        }
-        #pdfPanelHeader{
-          padding: 10px 10px;
-        }
+        #pdfBody{ padding: 8px; }
+        .pdfBigBtn{ height: 48px; min-width: 60px; font-size: 18px; }
       }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(st);
   }
 
   function ensureHeaderCell(){
     const hdr = document.querySelector(".headerRow");
     if (!hdr) return;
     if (hdr.querySelector("[data-pdf-header='1']")) return;
-
     const cell = document.createElement("div");
     cell.className = "headIconCell";
     cell.title = "PDF";
@@ -4441,12 +4439,12 @@ loadItems = async function(){
     hdr.appendChild(cell);
   }
 
-  function ensurePdfOverlay(){
+  function ensureOverlay(){
     if (document.getElementById("pdfOverlay")) return;
 
     const ov = document.createElement("div");
     ov.id = "pdfOverlay";
-    ov.setAttribute("aria-hidden","true");
+    ov.setAttribute("aria-hidden", "true");
 
     const panel = document.createElement("div");
     panel.id = "pdfPanel";
@@ -4464,47 +4462,59 @@ loadItems = async function(){
 
     const dl = document.createElement("a");
     dl.id = "pdfDownloadBtn";
-    dl.className = "pdfMiniBtn";
+    dl.className = "pdfBigBtn";
     dl.title = "İndir";
     dl.textContent = "⬇︎";
     dl.href = "#";
     dl.rel = "noopener";
     dl.target = "_blank";
-    dl.addEventListener("click", (e) => {
-      if (!lastPdf.url) {
-        e.preventDefault();
-        return;
-      }
-      // let anchor do its job; we also set download attribute dynamically
-    });
+
+    const openNew = document.createElement("a");
+    openNew.id = "pdfOpenNewBtn";
+    openNew.className = "pdfBigBtn";
+    openNew.title = "Yeni sekme";
+    openNew.textContent = "↗";
+    openNew.href = "#";
+    openNew.rel = "noopener";
+    openNew.target = "_blank";
 
     const close = document.createElement("button");
     close.id = "pdfCloseBtn";
-    close.className = "pdfMiniBtn";
+    close.className = "pdfBigBtn";
     close.type = "button";
     close.title = "Kapat";
     close.textContent = "✕";
 
-    const frame = document.createElement("iframe");
-    frame.id = "pdfFrame";
-    frame.setAttribute("loading","lazy");
-    frame.setAttribute("referrerpolicy","no-referrer-when-downgrade");
-
-    close.addEventListener("click", () => closePdf());
-    ov.addEventListener("click", () => closePdf());
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && ov.classList.contains("open")) closePdf();
-    });
-
     btns.appendChild(dl);
+    btns.appendChild(openNew);
     btns.appendChild(close);
 
     head.appendChild(title);
     head.appendChild(btns);
 
+    const body = document.createElement("div");
+    body.id = "pdfBody";
+
+    const wrap = document.createElement("div");
+    wrap.id = "pdfCanvasWrap";
+
+    const hint = document.createElement("div");
+    hint.id = "pdfHint";
+    hint.className = "pdfHint";
+    hint.textContent = "";
+
+    body.appendChild(wrap);
+    body.appendChild(hint);
+
+    close.addEventListener("click", closePdf);
+    ov.addEventListener("click", closePdf);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && ov.classList.contains("open")) closePdf();
+    });
+
     panel.appendChild(head);
-    panel.appendChild(frame);
+    panel.appendChild(body);
     ov.appendChild(panel);
     document.body.appendChild(ov);
   }
@@ -4515,53 +4525,26 @@ loadItems = async function(){
       document.body.style.overflow = "hidden";
     }catch{}
   }
-
   function unlockBodyScroll(){
+    try{ document.body.style.overflow = prevBodyOverflow; }catch{}
+  }
+
+  async function ensurePdfJs(){
+    if (window.pdfjsLib && window.pdfjsLib.getDocument) return;
+
+    await new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js";
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+
+    // Worker
     try{
-      document.body.style.overflow = prevBodyOverflow;
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
     }catch{}
-  }
-
-  function openPdf(titleText, url, filename){
-    ensurePdfOverlay();
-    ensurePdfCss();
-
-    const ov = document.getElementById("pdfOverlay");
-    const t = document.getElementById("pdfPanelTitle");
-    const f = document.getElementById("pdfFrame");
-    const dl = document.getElementById("pdfDownloadBtn");
-
-    if (!ov || !t || !f || !dl) return;
-
-    lastPdf = { title: titleText || "PDF", url: url || "", filename: filename || "document.pdf" };
-
-    // try to hint PDF viewer fit (helps on some browsers)
-    const fitUrl = url ? (url + (url.includes("#") ? "" : "#view=FitH")) : "about:blank";
-
-    t.textContent = lastPdf.title;
-    dl.href = lastPdf.url || "#";
-    dl.setAttribute("download", lastPdf.filename || "document.pdf");
-
-    // Set src after showing (mobile scroll glitches reduce)
-    lockBodyScroll();
-    ov.classList.add("open");
-    ov.setAttribute("aria-hidden","false");
-
-    // force reflow then set iframe src
-    requestAnimationFrame(() => { f.src = fitUrl; });
-  }
-
-  function closePdf(){
-    const ov = document.getElementById("pdfOverlay");
-    const f = document.getElementById("pdfFrame");
-    if (!ov) return;
-
-    ov.classList.remove("open");
-    ov.setAttribute("aria-hidden","true");
-    unlockBodyScroll();
-
-    if (f) f.src = "about:blank";
-    lastPdf = { title: "", url: "", filename: "" };
   }
 
   function buildPdfNameKeyForItem(it){
@@ -4569,7 +4552,6 @@ loadItems = async function(){
     const decoded = (typeof window.decodeURIComponentSafe === "function")
       ? window.decodeURIComponentSafe(raw)
       : decodeSafe(raw);
-
     return normKey(decoded.replace(/\.(m4a|mp3)$/i, ".pdf"));
   }
 
@@ -4596,7 +4578,7 @@ loadItems = async function(){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
 
-        const baseOriginal = decodeSafe(name.split("/").pop() || name).trim(); // keep original codepoints
+        const baseOriginal = decodeSafe(name.split("/").pop() || name).trim();
         const key = normKey(baseOriginal);
         if (key && baseOriginal) map.set(key, baseOriginal);
       }
@@ -4607,6 +4589,109 @@ loadItems = async function(){
       // silent
     }finally{
       pdfLoading = false;
+    }
+  }
+
+  function setOverlayMeta(titleText, url, filename){
+    const t = document.getElementById("pdfPanelTitle");
+    const dl = document.getElementById("pdfDownloadBtn");
+    const op = document.getElementById("pdfOpenNewBtn");
+
+    if (t) t.textContent = titleText || "PDF";
+    if (dl){
+      dl.href = url || "#";
+      dl.setAttribute("download", filename || "document.pdf");
+      dl.title = "İndir";
+    }
+    if (op){
+      op.href = url || "#";
+      op.title = "Yeni sekmede aç";
+    }
+  }
+
+  function clearCanvasWrap(){
+    const wrap = document.getElementById("pdfCanvasWrap");
+    const hint = document.getElementById("pdfHint");
+    if (wrap) wrap.innerHTML = "";
+    if (hint) hint.textContent = "";
+  }
+
+  function setHint(text){
+    const hint = document.getElementById("pdfHint");
+    if (hint) hint.textContent = text || "";
+  }
+
+  function openOverlay(){
+    const ov = document.getElementById("pdfOverlay");
+    if (!ov) return;
+    lockBodyScroll();
+    ov.classList.add("open");
+    ov.setAttribute("aria-hidden","false");
+  }
+
+  function closePdf(){
+    const ov = document.getElementById("pdfOverlay");
+    if (!ov) return;
+
+    renderAbort.aborted = true;
+    renderAbort = { aborted: false };
+
+    ov.classList.remove("open");
+    ov.setAttribute("aria-hidden","true");
+    unlockBodyScroll();
+    clearCanvasWrap();
+    lastPdf = { title: "", url: "", filename: "" };
+  }
+
+  async function renderPdfToCanvas(url){
+    await ensurePdfJs();
+
+    const wrap = document.getElementById("pdfCanvasWrap");
+    const body = document.getElementById("pdfBody");
+    if (!wrap || !body) return;
+
+    clearCanvasWrap();
+    setHint("Yükleniyor…");
+
+    const abortRef = renderAbort;
+    const loadingTask = window.pdfjsLib.getDocument({ url, withCredentials: false });
+
+    let pdf;
+    try{
+      pdf = await loadingTask.promise;
+    }catch{
+      setHint("PDF açılamadı.");
+      return;
+    }
+    if (abortRef.aborted) return;
+
+    setHint("");
+
+    // Fit-to-width: compute scale per page by container width
+    const containerWidth = Math.max(320, wrap.clientWidth || body.clientWidth || window.innerWidth);
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+      if (abortRef.aborted) return;
+
+      const page = await pdf.getPage(pageNum);
+      if (abortRef.aborted) return;
+
+      const vp1 = page.getViewport({ scale: 1 });
+      const scale = Math.max(0.25, (containerWidth - 8) / vp1.width); // fit width
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d", { alpha: false });
+
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+
+      const holder = document.createElement("div");
+      holder.className = "pdfPage";
+      holder.appendChild(canvas);
+      wrap.appendChild(holder);
+
+      await page.render({ canvasContext: ctx, viewport }).promise;
     }
   }
 
@@ -4630,7 +4715,7 @@ loadItems = async function(){
     btn.addEventListener("pointerdown", (e) => e.stopPropagation());
     btn.addEventListener("pointerup", (e) => e.stopPropagation());
 
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", async (e) => {
       e.stopPropagation();
       if (btn.disabled) return;
 
@@ -4640,7 +4725,17 @@ loadItems = async function(){
       const url = `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(originalPdfName)}`;
       const safeFilename = (originalPdfName || "document.pdf").replace(/[\\/:*?"<>|]+/g, "_");
 
-      openPdf(it?.title || originalPdfName, url, safeFilename);
+      lastPdf = { title: it?.title || originalPdfName, url, filename: safeFilename };
+
+      ensureCss();
+      ensureOverlay();
+      setOverlayMeta(lastPdf.title, lastPdf.url, lastPdf.filename);
+      openOverlay();
+
+      // render (fit-to-width + scroll)
+      renderAbort.aborted = true;
+      renderAbort = { aborted: false };
+      await renderPdfToCanvas(lastPdf.url);
     });
 
     return btn;
@@ -4685,9 +4780,9 @@ loadItems = async function(){
   }
 
   function init(){
-    ensurePdfCss();
+    ensureCss();
     ensureHeaderCell();
-    ensurePdfOverlay();
+    ensureOverlay();
 
     wrapOnce("loadItems", (orig) => async function(){
       const p = orig.apply(this, arguments);
@@ -4698,10 +4793,20 @@ loadItems = async function(){
 
     wrapOnce("render", (orig) => function(){
       const r = orig.apply(this, arguments);
-      ensurePdfCss();
+      ensureCss();
       ensureHeaderCell();
       enhancePdfButtons();
       return r;
+    });
+
+    // re-render current pdf on rotate/resize (fit-to-width)
+    window.addEventListener("resize", () => {
+      const ov = document.getElementById("pdfOverlay");
+      if (!ov || !ov.classList.contains("open")) return;
+      if (!lastPdf.url) return;
+      renderAbort.aborted = true;
+      renderAbort = { aborted: false };
+      renderPdfToCanvas(lastPdf.url);
     });
 
     loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
