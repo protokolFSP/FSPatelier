@@ -4284,5 +4284,215 @@ loadItems = async function(){
     loadItems();
     setTimeout(() => checkSrtAvailability().catch(()=>{}), 1200);
   </script>
+  <script>
+/**
+ * PDF column addon (non-invasive):
+ * - Does not edit existing function bodies.
+ * - Wraps render() + loadItems() to append PDF button as last column.
+ * - Active only if PDF exists under https://archive.org/details/FSPpdf
+ */
+(function fspPdfAddon(){
+  "use strict";
+
+  const PDF_IA_IDENTIFIER = "FSPpdf";
+  const PDF_TTL_MS = 6 * 60 * 60 * 1000;
+
+  let pdfNameSet = new Set();    // decoded basenames: "X.pdf"
+  let pdfLoadedAt = 0;
+  let pdfLoading = false;
+
+  function decodeSafe(s){
+    try { return decodeURIComponent(s); } catch { return String(s || ""); }
+  }
+
+  function ensurePdfCss(){
+    if (document.getElementById("pdf-addon-css")) return;
+    const style = document.createElement("style");
+    style.id = "pdf-addon-css";
+    style.textContent = `
+      /* force 7-column grid: +PDF column */
+      .headerRow, .itemRow{
+        grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
+      }
+      @media (max-width: 680px){
+        .headerRow, .itemRow{
+          grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureHeaderCell(){
+    const hdr = document.querySelector(".headerRow");
+    if (!hdr) return;
+    if (hdr.querySelector("[data-pdf-header='1']")) return;
+
+    const cell = document.createElement("div");
+    cell.className = "headIconCell";
+    cell.title = "PDF";
+    cell.setAttribute("aria-label", "PDF");
+    cell.textContent = "📄";
+    cell.dataset.pdfHeader = "1";
+    hdr.appendChild(cell);
+  }
+
+  function buildPdfNameForItem(it){
+    const raw = (it?.name || "").split("/").pop() || "";
+    const decoded = (typeof window.decodeURIComponentSafe === "function")
+      ? window.decodeURIComponentSafe(raw)
+      : decodeSafe(raw);
+    return decoded.replace(/\.(m4a|mp3)$/i, ".pdf");
+  }
+
+  function buildPdfDownloadUrl(pdfName){
+    const parts = String(pdfName || "").split("/").map(p => encodeURIComponent(p));
+    return `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${parts.join("/")}`;
+  }
+
+  function hasPdfForItem(it){
+    return pdfNameSet.has(buildPdfNameForItem(it));
+  }
+
+  async function loadPdfIndex(force){
+    const now = Date.now();
+    if (!force && pdfNameSet.size > 0 && (now - pdfLoadedAt) < PDF_TTL_MS) return;
+    if (pdfLoading) return;
+    pdfLoading = true;
+
+    try{
+      const metaUrl = `https://archive.org/metadata/${encodeURIComponent(PDF_IA_IDENTIFIER)}`;
+      const res = await fetch(metaUrl, { cache: force ? "no-store" : "no-cache" });
+      if (!res.ok) throw new Error("pdf metadata failed");
+      const j = await res.json();
+      const files = Array.isArray(j.files) ? j.files : [];
+
+      const set = new Set();
+      for (const f of files){
+        const name = (f && typeof f.name === "string") ? f.name : "";
+        if (!name || !/\.pdf$/i.test(name)) continue;
+        const base = decodeSafe(name.split("/").pop() || name).trim();
+        if (base) set.add(base);
+      }
+
+      pdfNameSet = set;
+      pdfLoadedAt = now;
+    }catch{
+      // silent
+    }finally{
+      pdfLoading = false;
+    }
+  }
+
+  function makePdfButton(enabled, title){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "iconBtn";
+    btn.title = title || "PDF";
+    btn.dataset.kind = "pdf";
+    btn.disabled = !enabled;
+
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <path d="M14 2v6h6"/>
+        <path d="M8 13h8"/>
+        <path d="M8 17h6"/>
+      </svg>
+    `;
+
+    // disabled look is already handled by your CSS (.iconBtn:disabled)
+    btn.addEventListener("pointerdown", (e) => e.stopPropagation());
+    btn.addEventListener("pointerup", (e) => e.stopPropagation());
+    return btn;
+  }
+
+  function enhancePdfButtons(){
+    try{
+      const listEl = document.getElementById("list");
+      if (!listEl) return;
+
+      // Keep DOM order aligned with visible items order.
+      const visible = (typeof window.getVisibleItems === "function") ? window.getVisibleItems() : null;
+      if (!Array.isArray(visible)) return;
+
+      const rows = Array.from(listEl.children).filter(el => el && el.classList && el.classList.contains("itemRow"));
+      const n = Math.min(rows.length, visible.length);
+
+      for (let i = 0; i < n; i++){
+        const row = rows[i];
+        const it = visible[i];
+        if (!row || !it) continue;
+
+        // if already has pdf btn, just update enabled/disabled state
+        let pdfBtn = row.querySelector("button.iconBtn[data-kind='pdf']");
+        const exists = hasPdfForItem(it);
+
+        if (!pdfBtn){
+          pdfBtn = makePdfButton(exists, exists ? "PDF aç" : "PDF yok");
+          pdfBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (pdfBtn.disabled) return;
+            const pdfName = buildPdfNameForItem(it);
+            const url = buildPdfDownloadUrl(pdfName);
+            window.open(url, "_blank", "noopener");
+          });
+          row.appendChild(pdfBtn); // last column
+        } else {
+          pdfBtn.disabled = !exists;
+          pdfBtn.title = exists ? "PDF aç" : "PDF yok";
+        }
+      }
+    }catch{
+      // silent
+    }
+  }
+
+  function wrapOnce(fnName, wrapper){
+    const orig = window[fnName];
+    if (typeof orig !== "function") return null;
+    if (orig.__pdfWrapped) return orig;
+    const wrapped = wrapper(orig);
+    wrapped.__pdfWrapped = true;
+    window[fnName] = wrapped;
+    return wrapped;
+  }
+
+  function init(){
+    ensurePdfCss();
+    ensureHeaderCell();
+
+    // Wrap loadItems: after it finishes, refresh pdf index (non-blocking), then render update.
+    wrapOnce("loadItems", (orig) => async function(){
+      const p = orig.apply(this, arguments);
+      try { await p; } catch {}
+      loadPdfIndex(false).then(() => {
+        if (typeof window.render === "function") window.render();
+      }).catch(()=>{});
+      return p;
+    });
+
+    // Wrap render: call original render, then add pdf buttons.
+    wrapOnce("render", (orig) => function(){
+      const r = orig.apply(this, arguments);
+      ensurePdfCss();
+      ensureHeaderCell();
+      enhancePdfButtons();
+      return r;
+    });
+
+    // First index load (non-blocking)
+    loadPdfIndex(false).then(() => {
+      if (typeof window.render === "function") window.render();
+    }).catch(()=>{});
+  }
+
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+</script>
 </body>
 </html>
