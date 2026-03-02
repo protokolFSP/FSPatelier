@@ -4284,20 +4284,14 @@ loadItems = async function(){
     loadItems();
     setTimeout(() => checkSrtAvailability().catch(()=>{}), 1200);
   </script>
-  <script>
-/**
- * PDF column addon (non-invasive):
- * - Does not edit existing function bodies.
- * - Wraps render() + loadItems() to append PDF button as last column.
- * - Active only if PDF exists under https://archive.org/details/FSPpdf
- */
+ <script>
 (function fspPdfAddon(){
   "use strict";
 
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  let pdfNameSet = new Set();    // decoded basenames: "X.pdf"
+  let pdfNameSet = new Set(); // decoded basenames: "... .pdf"
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
@@ -4310,7 +4304,6 @@ loadItems = async function(){
     const style = document.createElement("style");
     style.id = "pdf-addon-css";
     style.textContent = `
-      /* force 7-column grid: +PDF column */
       .headerRow, .itemRow{
         grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
       }
@@ -4337,22 +4330,16 @@ loadItems = async function(){
     hdr.appendChild(cell);
   }
 
- function buildPdfNameForItem(it){
-  const raw = (it?.name || "").split("/").pop() || "";
-  const decoded = (typeof window.decodeURIComponentSafe === "function")
-    ? window.decodeURIComponentSafe(raw)
-    : decodeSafe(raw);
+  function buildPdfNameForItem(it){
+    const raw = (it?.name || "").split("/").pop() || "";
+    const decoded = (typeof window.decodeURIComponentSafe === "function")
+      ? window.decodeURIComponentSafe(raw)
+      : decodeSafe(raw);
 
-  // ✅ normalize to match IA filenames that may use decomposed chars
- return decoded
-  .replace(/\.(m4a|mp3)$/i, ".pdf")
-  .normalize("NFC")
-  .trim();
-}
-
-  function buildPdfDownloadUrl(pdfName){
-    const parts = String(pdfName || "").split("/").map(p => encodeURIComponent(p));
-    return `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${parts.join("/")}`;
+    return decoded
+      .replace(/\.(m4a|mp3)$/i, ".pdf")
+      .normalize("NFC")
+      .trim();
   }
 
   function hasPdfForItem(it){
@@ -4376,26 +4363,28 @@ loadItems = async function(){
       for (const f of files){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
-       const base = decodeSafe(name.split("/").pop() || name).normalize("NFC").trim();
-  .normalize("NFC")
-  .trim();
+
+        const base = decodeSafe(name.split("/").pop() || name)
+          .normalize("NFC")
+          .trim();
+
         if (base) set.add(base);
       }
 
       pdfNameSet = set;
       pdfLoadedAt = now;
     }catch{
-      // silent
+      // sessiz
     }finally{
       pdfLoading = false;
     }
   }
 
-  function makePdfButton(enabled, title){
+  function makePdfButton(enabled, it){
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "iconBtn";
-    btn.title = title || "PDF";
+    btn.title = enabled ? "PDF aç" : "PDF yok";
     btn.dataset.kind = "pdf";
     btn.disabled = !enabled;
 
@@ -4408,78 +4397,72 @@ loadItems = async function(){
       </svg>
     `;
 
-    // disabled look is already handled by your CSS (.iconBtn:disabled)
     btn.addEventListener("pointerdown", (e) => e.stopPropagation());
     btn.addEventListener("pointerup", (e) => e.stopPropagation());
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (btn.disabled) return;
+
+      const pdfName = buildPdfNameForItem(it);
+
+      // ✅ direct file URL (IA UI yok)
+      const url = `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(pdfName)}`;
+      window.open(url, "_blank", "noopener");
+    });
+
     return btn;
   }
 
   function enhancePdfButtons(){
-    try{
-      const listEl = document.getElementById("list");
-      if (!listEl) return;
+    const listEl = document.getElementById("list");
+    if (!listEl) return;
+    if (typeof window.getVisibleItems !== "function") return;
 
-      // Keep DOM order aligned with visible items order.
-      const visible = (typeof window.getVisibleItems === "function") ? window.getVisibleItems() : null;
-      if (!Array.isArray(visible)) return;
+    const visible = window.getVisibleItems();
+    if (!Array.isArray(visible) || !visible.length) return;
 
-      const rows = Array.from(listEl.children).filter(el => el && el.classList && el.classList.contains("itemRow"));
-      const n = Math.min(rows.length, visible.length);
+    const rows = Array.from(listEl.children).filter(el => el?.classList?.contains("itemRow"));
+    const n = Math.min(rows.length, visible.length);
 
-      for (let i = 0; i < n; i++){
-        const row = rows[i];
-        const it = visible[i];
-        if (!row || !it) continue;
+    for (let i = 0; i < n; i++){
+      const row = rows[i];
+      const it = visible[i];
+      if (!row || !it) continue;
 
-        // if already has pdf btn, just update enabled/disabled state
-        let pdfBtn = row.querySelector("button.iconBtn[data-kind='pdf']");
-        const exists = hasPdfForItem(it);
+      let pdfBtn = row.querySelector("button.iconBtn[data-kind='pdf']");
+      const exists = hasPdfForItem(it);
 
-        if (!pdfBtn){
-          pdfBtn = makePdfButton(exists, exists ? "PDF aç" : "PDF yok");
-          pdfBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (pdfBtn.disabled) return;
-            const pdfName = buildPdfNameForItem(it);
-           const url = `https://archive.org/details/${encodeURIComponent(PDF_IA_IDENTIFIER)}?filename=${encodeURIComponent(pdfName)}`;
-          window.open(url, "_blank", "noopener");
-          });
-          row.appendChild(pdfBtn); // last column
-        } else {
-          pdfBtn.disabled = !exists;
-          pdfBtn.title = exists ? "PDF aç" : "PDF yok";
-        }
+      if (!pdfBtn){
+        pdfBtn = makePdfButton(exists, it);
+        row.appendChild(pdfBtn);
+      } else {
+        pdfBtn.disabled = !exists;
+        pdfBtn.title = exists ? "PDF aç" : "PDF yok";
       }
-    }catch{
-      // silent
     }
   }
 
   function wrapOnce(fnName, wrapper){
     const orig = window[fnName];
-    if (typeof orig !== "function") return null;
-    if (orig.__pdfWrapped) return orig;
+    if (typeof orig !== "function") return;
+    if (orig.__pdfWrapped) return;
     const wrapped = wrapper(orig);
     wrapped.__pdfWrapped = true;
     window[fnName] = wrapped;
-    return wrapped;
   }
 
   function init(){
     ensurePdfCss();
     ensureHeaderCell();
 
-    // Wrap loadItems: after it finishes, refresh pdf index (non-blocking), then render update.
     wrapOnce("loadItems", (orig) => async function(){
       const p = orig.apply(this, arguments);
       try { await p; } catch {}
-      loadPdfIndex(false).then(() => {
-        if (typeof window.render === "function") window.render();
-      }).catch(()=>{});
+      loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
       return p;
     });
 
-    // Wrap render: call original render, then add pdf buttons.
     wrapOnce("render", (orig) => function(){
       const r = orig.apply(this, arguments);
       ensurePdfCss();
@@ -4488,10 +4471,7 @@ loadItems = async function(){
       return r;
     });
 
-    // First index load (non-blocking)
-    loadPdfIndex(false).then(() => {
-      if (typeof window.render === "function") window.render();
-    }).catch(()=>{});
+    loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
   }
 
   if (document.readyState === "loading"){
