@@ -4296,6 +4296,10 @@ loadItems = async function(){
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
+  // keep last opened pdf info for download button
+  let lastPdf = { title: "", url: "", filename: "" };
+  let prevBodyOverflow = "";
+
   function decodeSafe(s){
     try { return decodeURIComponent(s); } catch { return String(s || ""); }
   }
@@ -4304,86 +4308,123 @@ loadItems = async function(){
     return String(s || "").normalize("NFC").trim();
   }
 
-  function ensurePdfCss(){
-    if (!document.getElementById("pdf-addon-css")) {
-      const style = document.createElement("style");
-      style.id = "pdf-addon-css";
-      style.textContent = `
-        .headerRow, .itemRow{
-          grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
-        }
-        @media (max-width: 680px){
-          .headerRow, .itemRow{
-            grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px !important;
-          }
-        }
+  function isMobile(){
+    return window.matchMedia && window.matchMedia("(max-width: 680px)").matches;
+  }
 
-        /* simple PDF overlay */
-        #pdfOverlay{
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,.25);
-          z-index: 10080;
-          display: none;
-          align-items: center;
-          justify-content: center;
-          padding: 14px;
+  function ensurePdfCss(){
+    if (document.getElementById("pdf-addon-css")) return;
+
+    const style = document.createElement("style");
+    style.id = "pdf-addon-css";
+    style.textContent = `
+      .headerRow, .itemRow{
+        grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
+      }
+      @media (max-width: 680px){
+        .headerRow, .itemRow{
+          grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px !important;
         }
-        #pdfOverlay.open{ display: flex; }
+      }
+
+      /* PDF overlay */
+      #pdfOverlay{
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.25);
+        z-index: 10080;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+        touch-action: none; /* prevent background gestures */
+      }
+      #pdfOverlay.open{ display: flex; }
+
+      #pdfPanel{
+        width: min(1100px, calc(100vw - 28px));
+        height: min(88vh, 900px);
+        background: #fff;
+        border: 1.5px solid #d6d6d6;
+        border-right-color: #bdbdbd;
+        border-bottom-color:#b3b3b3;
+        border-radius: 18px;
+        box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        touch-action: auto;
+      }
+
+      #pdfPanelHeader{
+        padding: 10px 12px;
+        background: #fbfbfb;
+        display:flex;
+        align-items:center;
+        justify-content: space-between;
+        gap: 10px;
+        border-bottom: 1px solid #ececec;
+        line-height: 1.05;
+        flex: 0 0 auto;
+      }
+
+      #pdfPanelTitle{
+        font-weight: 750;
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      #pdfPanelBtns{
+        display:flex;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      .pdfMiniBtn{
+        width: 40px;
+        height: 36px;
+        border-radius: 12px;
+        border: 1px solid #d8d8d8;
+        background: white;
+        cursor: pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        user-select:none;
+        text-decoration: none;
+        color: #111;
+      }
+      .pdfMiniBtn:hover{ background: #f7f7f7; }
+      .pdfMiniBtn:disabled{ opacity: .45; cursor: default; }
+
+      #pdfFrame{
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #fff;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y pan-x;
+      }
+
+      /* Mobile: full-screen panel, no gaps */
+      @media (max-width: 680px){
+        #pdfOverlay{ padding: 0; }
         #pdfPanel{
-          width: min(1100px, calc(100vw - 28px));
-          height: min(88vh, 900px);
-          background: #fff;
-          border: 1.5px solid #d6d6d6;
-          border-right-color: #bdbdbd;
-          border-bottom-color:#b3b3b3;
-          border-radius: 18px;
-          box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
+          width: 100vw;
+          height: 100svh;  /* better on mobile address-bar */
+          border-radius: 0;
         }
         #pdfPanelHeader{
-          padding: 10px 12px;
-          background: #fbfbfb;
-          display:flex;
-          align-items:center;
-          justify-content: space-between;
-          gap: 10px;
-          border-bottom: 1px solid #ececec;
-          line-height: 1.05;
+          padding: 10px 10px;
         }
-        #pdfPanelTitle{
-          font-weight: 750;
-          font-size: 1rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          flex: 1 1 auto;
-          min-width: 0;
-        }
-        #pdfCloseBtn{
-          width: 40px;
-          height: 36px;
-          border-radius: 12px;
-          border: 1px solid #d8d8d8;
-          background: white;
-          cursor: pointer;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          user-select:none;
-        }
-        #pdfCloseBtn:hover{ background: #f7f7f7; }
-        #pdfFrame{
-          width: 100%;
-          height: 100%;
-          border: 0;
-          background: #fff;
-        }
-      `;
-      document.head.appendChild(style);
-    }
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   function ensureHeaderCell(){
@@ -4418,8 +4459,28 @@ loadItems = async function(){
     title.id = "pdfPanelTitle";
     title.textContent = "PDF";
 
+    const btns = document.createElement("div");
+    btns.id = "pdfPanelBtns";
+
+    const dl = document.createElement("a");
+    dl.id = "pdfDownloadBtn";
+    dl.className = "pdfMiniBtn";
+    dl.title = "İndir";
+    dl.textContent = "⬇︎";
+    dl.href = "#";
+    dl.rel = "noopener";
+    dl.target = "_blank";
+    dl.addEventListener("click", (e) => {
+      if (!lastPdf.url) {
+        e.preventDefault();
+        return;
+      }
+      // let anchor do its job; we also set download attribute dynamically
+    });
+
     const close = document.createElement("button");
     close.id = "pdfCloseBtn";
+    close.className = "pdfMiniBtn";
     close.type = "button";
     close.title = "Kapat";
     close.textContent = "✕";
@@ -4427,42 +4488,80 @@ loadItems = async function(){
     const frame = document.createElement("iframe");
     frame.id = "pdfFrame";
     frame.setAttribute("loading","lazy");
+    frame.setAttribute("referrerpolicy","no-referrer-when-downgrade");
 
     close.addEventListener("click", () => closePdf());
     ov.addEventListener("click", () => closePdf());
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && ov.classList.contains("open")) closePdf();
     });
 
+    btns.appendChild(dl);
+    btns.appendChild(close);
+
     head.appendChild(title);
-    head.appendChild(close);
+    head.appendChild(btns);
+
     panel.appendChild(head);
     panel.appendChild(frame);
     ov.appendChild(panel);
     document.body.appendChild(ov);
   }
 
-  function openPdf(titleText, url){
+  function lockBodyScroll(){
+    try{
+      prevBodyOverflow = document.body.style.overflow || "";
+      document.body.style.overflow = "hidden";
+    }catch{}
+  }
+
+  function unlockBodyScroll(){
+    try{
+      document.body.style.overflow = prevBodyOverflow;
+    }catch{}
+  }
+
+  function openPdf(titleText, url, filename){
     ensurePdfOverlay();
+    ensurePdfCss();
+
     const ov = document.getElementById("pdfOverlay");
     const t = document.getElementById("pdfPanelTitle");
     const f = document.getElementById("pdfFrame");
-    if (!ov || !t || !f) return;
+    const dl = document.getElementById("pdfDownloadBtn");
 
-    t.textContent = titleText || "PDF";
-    f.src = url;
+    if (!ov || !t || !f || !dl) return;
 
+    lastPdf = { title: titleText || "PDF", url: url || "", filename: filename || "document.pdf" };
+
+    // try to hint PDF viewer fit (helps on some browsers)
+    const fitUrl = url ? (url + (url.includes("#") ? "" : "#view=FitH")) : "about:blank";
+
+    t.textContent = lastPdf.title;
+    dl.href = lastPdf.url || "#";
+    dl.setAttribute("download", lastPdf.filename || "document.pdf");
+
+    // Set src after showing (mobile scroll glitches reduce)
+    lockBodyScroll();
     ov.classList.add("open");
     ov.setAttribute("aria-hidden","false");
+
+    // force reflow then set iframe src
+    requestAnimationFrame(() => { f.src = fitUrl; });
   }
 
   function closePdf(){
     const ov = document.getElementById("pdfOverlay");
     const f = document.getElementById("pdfFrame");
     if (!ov) return;
+
     ov.classList.remove("open");
     ov.setAttribute("aria-hidden","true");
+    unlockBodyScroll();
+
     if (f) f.src = "about:blank";
+    lastPdf = { title: "", url: "", filename: "" };
   }
 
   function buildPdfNameKeyForItem(it){
@@ -4538,10 +4637,10 @@ loadItems = async function(){
       const originalPdfName = getPdfOriginalNameForItem(it);
       if (!originalPdfName) return;
 
-      // ✅ direct file URL with IA-original filename (prevents 404 from NFC/NFD mismatch)
       const url = `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(originalPdfName)}`;
+      const safeFilename = (originalPdfName || "document.pdf").replace(/[\\/:*?"<>|]+/g, "_");
 
-      openPdf(it?.title || originalPdfName, url);
+      openPdf(it?.title || originalPdfName, url, safeFilename);
     });
 
     return btn;
