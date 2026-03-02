@@ -4337,13 +4337,18 @@ loadItems = async function(){
     hdr.appendChild(cell);
   }
 
-  function buildPdfNameForItem(it){
-    const raw = (it?.name || "").split("/").pop() || "";
-    const decoded = (typeof window.decodeURIComponentSafe === "function")
-      ? window.decodeURIComponentSafe(raw)
-      : decodeSafe(raw);
-    return decoded.replace(/\.(m4a|mp3)$/i, ".pdf");
-  }
+ function buildPdfNameForItem(it){
+  const raw = (it?.name || "").split("/").pop() || "";
+  const decoded = (typeof window.decodeURIComponentSafe === "function")
+    ? window.decodeURIComponentSafe(raw)
+    : decodeSafe(raw);
+
+  // ✅ normalize to match IA filenames that may use decomposed chars
+  return decoded
+    .replace(/\.(m4a|mp3)$/i, ".pdf")
+    .normalize("NFC")
+    .trim();
+}
 
   function buildPdfDownloadUrl(pdfName){
     const parts = String(pdfName || "").split("/").map(p => encodeURIComponent(p));
@@ -4371,7 +4376,9 @@ loadItems = async function(){
       for (const f of files){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
-        const base = decodeSafe(name.split("/").pop() || name).trim();
+       const base = decodeSafe(name.split("/").pop() || name)
+  .normalize("NFC")
+  .trim();
         if (base) set.add(base);
       }
 
