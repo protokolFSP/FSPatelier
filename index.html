@@ -4286,24 +4286,22 @@ loadItems = async function(){
   </script>
 
 <script>
-(function fspPdfAddonHybridMobileIA_DesktopPdfJs(){
+(function fspPdfAddonFinal(){
   "use strict";
 
   const PDF_IA_IDENTIFIER = "FSPpdf";
-  const PDF_PROXY_BASE = "https://pdf-proxy.protokolfsp.workers.dev/"; // senin worker
+  const PDF_PROXY_BASE = "https://pdf-proxy.protokolfsp.workers.dev/";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // normalized basename -> original IA basename
-  let pdfNameMap = new Map();
+  let pdfNameMap = new Map(); // normalized basename -> original IA basename
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
   let prevBodyOverflow = "";
   let pdfjsReady = false;
 
-  // desktop render cancel token
   let renderToken = { dead: false };
-  let current = { fileUrl: "", filename: "", title: "" };
+  let current = { base: "", fileUrl: "", filename: "", title: "" };
 
   function decodeSafe(s){ try { return decodeURIComponent(s); } catch { return String(s || ""); } }
   function normKey(s){ return String(s || "").normalize("NFC").trim(); }
@@ -4389,7 +4387,7 @@ loadItems = async function(){
         -webkit-overflow-scrolling: touch;
         background:#f2f2f2;
         padding:10px;
-        display:none; /* desktop default ON via media below */
+        display:none; /* desktop ON when pdfjs path is used */
       }
       #pdfCanvasWrap{
         display:grid;
@@ -4409,26 +4407,17 @@ loadItems = async function(){
         text-align:center;
       }
 
-      /* Mobile IA iframe */
-      #pdfIAFrame{
+      /* IA EMBED iframe (mobile default, desktop fallback) */
+      #pdfIAEmbed{
         flex:1 1 auto;
         width:100%;
         border:0;
         background:#fff;
-        display:none; /* mobile ON */
+        display:none;
       }
 
-      /* Desktop: show pdf.js, hide IA iframe */
-      @media (min-width: 681px){
-        #pdfBody{ display:block; }
-        #pdfIAFrame{ display:none; }
-      }
-
-      /* Mobile: show IA iframe, hide pdf.js */
       @media (max-width: 680px){
         .pdfBigBtn{ height:60px; min-width:140px; font-size:22px; }
-        #pdfBody{ display:none; }
-        #pdfIAFrame{ display:block; }
       }
     `;
     document.head.appendChild(st);
@@ -4480,9 +4469,11 @@ loadItems = async function(){
     close.type = "button";
     close.textContent = "Kapat";
 
-    const iaFrame = document.createElement("iframe");
-    iaFrame.id = "pdfIAFrame";
-    iaFrame.setAttribute("loading","lazy");
+    const iaEmbed = document.createElement("iframe");
+    iaEmbed.id = "pdfIAEmbed";
+    iaEmbed.setAttribute("loading","lazy");
+    // embed needs scripts; keep permissive but not too much
+    iaEmbed.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups");
 
     const body = document.createElement("div");
     body.id = "pdfBody";
@@ -4514,7 +4505,7 @@ loadItems = async function(){
     head.appendChild(btns);
 
     panel.appendChild(head);
-    panel.appendChild(iaFrame);
+    panel.appendChild(iaEmbed);
     panel.appendChild(body);
 
     ov.appendChild(panel);
@@ -4546,15 +4537,28 @@ loadItems = async function(){
     setHint("");
   }
 
+  function showDesktopPdfJs(){
+    const body = document.getElementById("pdfBody");
+    const ia = document.getElementById("pdfIAEmbed");
+    if (body) body.style.display = "block";
+    if (ia) ia.style.display = "none";
+  }
+
+  function showIaEmbed(){
+    const body = document.getElementById("pdfBody");
+    const ia = document.getElementById("pdfIAEmbed");
+    if (body) body.style.display = "none";
+    if (ia) ia.style.display = "block";
+  }
+
   function closePdf(){
     const ov = document.getElementById("pdfOverlay");
-    const ia = document.getElementById("pdfIAFrame");
+    const ia = document.getElementById("pdfIAEmbed");
     if (!ov) return;
 
-    // cancel desktop render
     renderToken.dead = true;
     renderToken = { dead: false };
-    current = { fileUrl: "", filename: "", title: "" };
+    current = { base: "", fileUrl: "", filename: "", title: "" };
 
     ov.classList.remove("open");
     ov.setAttribute("aria-hidden","true");
@@ -4584,12 +4588,15 @@ loadItems = async function(){
     u.searchParams.set("u", fileUrl);
     u.searchParams.set("dl", dl ? "1" : "0");
     if (filename) u.searchParams.set("f", filename);
+    // cache bust (worker/CDN)
+    u.searchParams.set("v", String(Date.now()));
     return u.toString();
   }
 
-  function iaPreviewUrl(base){
-    // ✅ mobilde beğendiğin IA preview: details+filename
-    return `https://archive.org/details/${encodeURIComponent(PDF_IA_IDENTIFIER)}?filename=${encodeURIComponent(base)}`;
+  function iaEmbedUrl(base){
+    // ✅ “full details page” değil: embed viewer
+    // filename param works well for single-file items too.
+    return `https://archive.org/embed/${encodeURIComponent(PDF_IA_IDENTIFIER)}?filename=${encodeURIComponent(base)}`;
   }
 
   async function ensurePdfJs(){
@@ -4630,8 +4637,7 @@ loadItems = async function(){
     try{
       pdf = await window.pdfjsLib.getDocument({ url: viewUrl, withCredentials: false }).promise;
     }catch{
-      setHint("PDF açılamadı.");
-      return;
+      throw new Error("pdfjs_open_failed");
     }
     if (token.dead) return;
 
@@ -4664,19 +4670,18 @@ loadItems = async function(){
     }
   }
 
-  function openPdf(titleText, base){
+  async function openPdf(titleText, base){
     ensureCss();
     ensureOverlay();
 
     const ov = document.getElementById("pdfOverlay");
     const t = document.getElementById("pdfPanelTitle");
     const dlBtn = document.getElementById("pdfDlBtn");
-    const ia = document.getElementById("pdfIAFrame");
+    const ia = document.getElementById("pdfIAEmbed");
     if (!ov || !t || !dlBtn || !ia) return;
 
     const safeFilename = String(base || "document.pdf").replace(/[\\/:*?"<>|]+/g, "_");
     const fileUrl = archiveDownloadUrl(base);
-
     const dlUrl = proxyUrlFor(fileUrl, safeFilename, true);
 
     t.textContent = titleText || "PDF";
@@ -4687,20 +4692,31 @@ loadItems = async function(){
     ov.classList.add("open");
     ov.setAttribute("aria-hidden","false");
 
+    // ✅ Mobile: always IA EMBED (senin istediğin)
     if (isMobile()){
-      // ✅ mobil: IA preview
-      ia.src = iaPreviewUrl(base) + (ia.src.includes("?") ? "&" : "?") + "v=" + Date.now();
+      showIaEmbed();
+      ia.src = iaEmbedUrl(base) + "&v=" + Date.now();
       clearDesktopPages();
       return;
     }
 
-    // ✅ desktop: pdf.js
+    // ✅ Desktop: try PDF.js first; if fails -> IA EMBED fallback (NOT details)
+    showDesktopPdfJs();
     ia.src = "about:blank";
+
     renderToken.dead = true;
     renderToken = { dead: false };
-    current = { fileUrl, filename: safeFilename, title: titleText || "PDF" };
+    current = { base, fileUrl, filename: safeFilename, title: titleText || "PDF" };
 
-    renderDesktopPdf(fileUrl, safeFilename).catch(() => setHint("PDF açılamadı."));
+    try{
+      await renderDesktopPdf(fileUrl, safeFilename);
+    }catch{
+      // fallback to IA embed (cleaner than full details)
+      clearDesktopPages();
+      setHint("");
+      showIaEmbed();
+      ia.src = iaEmbedUrl(base) + "&v=" + Date.now();
+    }
   }
 
   function buildPdfKeyForItem(it){
@@ -4820,7 +4836,7 @@ loadItems = async function(){
 
   function init(){
     try{
-      new URL(PDF_PROXY_BASE); // validate
+      new URL(PDF_PROXY_BASE);
 
       ensureCss();
       ensureHeader();
@@ -4841,12 +4857,16 @@ loadItems = async function(){
         return r;
       });
 
-      // desktop: on resize, re-render current pdf for better fit
+      // desktop: resize -> re-render pdf.js if active
       window.addEventListener("resize", () => {
         if (isMobile()) return;
         const ov = document.getElementById("pdfOverlay");
         if (!ov || !ov.classList.contains("open")) return;
         if (!current.fileUrl) return;
+
+        // only if pdf.js panel visible
+        const body = document.getElementById("pdfBody");
+        if (!body || body.style.display !== "block") return;
 
         renderToken.dead = true;
         renderToken = { dead: false };
