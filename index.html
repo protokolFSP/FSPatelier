@@ -4286,35 +4286,27 @@ loadItems = async function(){
   </script>
 
 <script>
-(function fspPdfAddonHybrid(){
+(function fspPdfAddonIframeOnly(){
   "use strict";
 
   const PDF_PROXY_BASE = "https://pdf-proxy.protokolfsp.workers.dev/";
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // normalized basename -> original IA basename (may be NFD)
   let pdfNameMap = new Map();
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
   let prevBodyOverflow = "";
 
-  // mobile pdf.js state
-  let renderToken = { dead: false };
-  let currentMobile = { fileUrl: "", filename: "", title: "" };
-  let pdfjsReady = false;
-
   function decodeSafe(s){ try { return decodeURIComponent(s); } catch { return String(s || ""); } }
   function normKey(s){ return String(s || "").normalize("NFC").trim(); }
-  function isMobile(){ return window.matchMedia && window.matchMedia("(max-width: 680px)").matches; }
 
   function ensureCss(){
     if (document.getElementById("pdf-addon-css")) return;
     const st = document.createElement("style");
     st.id = "pdf-addon-css";
     st.textContent = `
-      /* 7th column */
       .headerRow, .itemRow{
         grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
       }
@@ -4324,14 +4316,12 @@ loadItems = async function(){
         }
       }
 
-      /* Overlay */
       #pdfOverlay{
         position: fixed;
         inset: 0;
         background: rgba(0,0,0,.28);
         z-index: 10080;
         display: none;
-        touch-action: none;
       }
       #pdfOverlay.open{ display:block; }
 
@@ -4352,7 +4342,6 @@ loadItems = async function(){
         justify-content: space-between;
         gap: 10px;
         border-bottom: 1px solid #ececec;
-        line-height: 1.05;
       }
 
       #pdfPanelTitle{
@@ -4365,7 +4354,7 @@ loadItems = async function(){
         min-width: 0;
       }
 
-      #pdfPanelBtns{ display:flex; gap:10px; flex:0 0 auto; }
+      #pdfPanelBtns{ display:flex; gap:10px; }
 
       .pdfBigBtn{
         height: 56px;
@@ -4381,13 +4370,10 @@ loadItems = async function(){
         align-items:center;
         justify-content:center;
         user-select:none;
-        text-decoration:none;
-        color:#111;
         -webkit-tap-highlight-color: transparent;
       }
       .pdfBigBtn:hover{ background:#f7f7f7; }
 
-      /* Desktop viewer (iframe) */
       #pdfFrame{
         flex: 1 1 auto;
         width: 100%;
@@ -4395,40 +4381,8 @@ loadItems = async function(){
         background: #fff;
       }
 
-      /* Mobile viewer (pdf.js canvas list) */
-      #pdfBody{
-        flex: 1 1 auto;
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
-        background: #f2f2f2;
-        padding: 10px;
-        touch-action: pan-y pan-x;
-        display: none; /* only mobile */
-      }
-      #pdfCanvasWrap{
-        display: grid;
-        gap: 10px;
-        justify-items: center;
-      }
-      .pdfPage{
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 10px 22px rgba(0,0,0,.10);
-        width: 100%;
-        max-width: 980px;
-      }
-      #pdfHint{
-        color: #666;
-        font-size: 14px;
-        padding: 10px 0 0 0;
-        text-align: center;
-      }
-
       @media (max-width: 680px){
         .pdfBigBtn{ height: 60px; min-width: 140px; font-size: 22px; }
-        #pdfBody{ display: block; }
-        #pdfFrame{ display:none; } /* mobile uses pdf.js */
       }
     `;
     document.head.appendChild(st);
@@ -4441,7 +4395,6 @@ loadItems = async function(){
     const cell = document.createElement("div");
     cell.className = "headIconCell";
     cell.title = "PDF";
-    cell.setAttribute("aria-label","PDF");
     cell.textContent = "📄";
     cell.dataset.pdfHeader = "1";
     hdr.appendChild(cell);
@@ -4473,30 +4426,16 @@ loadItems = async function(){
     dl.className = "pdfBigBtn";
     dl.type = "button";
     dl.textContent = "İndir";
-    dl.title = "İndir";
 
     const close = document.createElement("button");
     close.id = "pdfCloseBtn";
     close.className = "pdfBigBtn";
     close.type = "button";
     close.textContent = "Kapat";
-    close.title = "Kapat";
 
     const frame = document.createElement("iframe");
     frame.id = "pdfFrame";
     frame.setAttribute("loading","lazy");
-
-    const body = document.createElement("div");
-    body.id = "pdfBody";
-
-    const wrap = document.createElement("div");
-    wrap.id = "pdfCanvasWrap";
-
-    const hint = document.createElement("div");
-    hint.id = "pdfHint";
-
-    body.appendChild(wrap);
-    body.appendChild(hint);
 
     close.addEventListener("click", closePdf);
     ov.addEventListener("click", closePdf);
@@ -4517,7 +4456,6 @@ loadItems = async function(){
 
     panel.appendChild(head);
     panel.appendChild(frame);
-    panel.appendChild(body);
     ov.appendChild(panel);
 
     document.body.appendChild(ov);
@@ -4537,33 +4475,14 @@ loadItems = async function(){
     try{ document.body.style.overflow = prevBodyOverflow; }catch{}
   }
 
-  function setHint(text){
-    const hint = document.getElementById("pdfHint");
-    if (hint) hint.textContent = text || "";
-  }
-
-  function clearMobilePages(){
-    const wrap = document.getElementById("pdfCanvasWrap");
-    if (wrap) wrap.innerHTML = "";
-    setHint("");
-  }
-
   function closePdf(){
     const ov = document.getElementById("pdfOverlay");
     const f = document.getElementById("pdfFrame");
     if (!ov) return;
-
-    // abort mobile render
-    renderToken.dead = true;
-    renderToken = { dead: false };
-    currentMobile = { fileUrl: "", filename: "", title: "" };
-
     ov.classList.remove("open");
     ov.setAttribute("aria-hidden","true");
     unlockBody();
-
     if (f) f.src = "about:blank";
-    clearMobilePages();
   }
 
   function downloadNoBlank(href, filename){
@@ -4589,90 +4508,6 @@ loadItems = async function(){
     return u.toString();
   }
 
-  async function ensurePdfJs(){
-    if (pdfjsReady) return;
-    if (window.pdfjsLib && window.pdfjsLib.getDocument) {
-      pdfjsReady = true;
-      return;
-    }
-
-    await new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js";
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
-
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
-
-    pdfjsReady = true;
-  }
-
-  async function renderMobilePdf(fileUrl, filename){
-    await ensurePdfJs();
-
-    const wrap = document.getElementById("pdfCanvasWrap");
-    const body = document.getElementById("pdfBody");
-    if (!wrap || !body) return;
-
-    clearMobilePages();
-    setHint("Yükleniyor…");
-
-    const token = renderToken;
-
-    const viewerUrl = proxyUrlFor(fileUrl, filename, false);
-
-    let pdf;
-    try{
-      pdf = await window.pdfjsLib.getDocument({ url: viewerUrl, withCredentials: false }).promise;
-    }catch{
-      setHint("PDF açılamadı.");
-      return;
-    }
-    if (token.dead) return;
-
-    setHint("");
-
-    // target: 1 ekranda 3 sayfa
-    const bodyH = Math.max(200, body.clientHeight || window.innerHeight);
-    const bodyW = Math.max(320, wrap.clientWidth || body.clientWidth || window.innerWidth);
-
-    const gap = 10;
-    const targetPageH = Math.max(120, Math.floor((bodyH - (gap * 2) - 8) / 3)); // 3 per screen
-
-    // render all pages (can be heavy; works ok for typical PDFs)
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
-      if (token.dead) return;
-
-      const page = await pdf.getPage(pageNum);
-      if (token.dead) return;
-
-      const vp1 = page.getViewport({ scale: 1 });
-
-      // scale for width fit and for 1/3 height
-      const scaleW = (bodyW - 12) / vp1.width;
-      const scaleH = targetPageH / vp1.height;
-      const scale = Math.max(0.15, Math.min(scaleW, scaleH)); // shrink if needed
-
-      const viewport = page.getViewport({ scale });
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d", { alpha: false });
-
-      canvas.width = Math.floor(viewport.width);
-      canvas.height = Math.floor(viewport.height);
-
-      const holder = document.createElement("div");
-      holder.className = "pdfPage";
-      holder.appendChild(canvas);
-      wrap.appendChild(holder);
-
-      await page.render({ canvasContext: ctx, viewport }).promise;
-    }
-  }
-
   function openPdf(titleText, fileUrl, filename){
     ensureCss();
     ensureOverlay();
@@ -4694,16 +4529,7 @@ loadItems = async function(){
     ov.classList.add("open");
     ov.setAttribute("aria-hidden","false");
 
-    if (isMobile()){
-      // mobile: pdf.js render (3 pages per screen)
-      renderToken.dead = true;
-      renderToken = { dead: false };
-      currentMobile = { fileUrl, filename, title: titleText || "PDF" };
-      renderMobilePdf(fileUrl, filename).catch(()=>{ setHint("PDF açılamadı."); });
-    } else {
-      // desktop: iframe viewer (first good style)
-      requestAnimationFrame(() => { f.src = viewUrl; });
-    }
+    requestAnimationFrame(() => { f.src = viewUrl; });
   }
 
   function buildPdfKeyForItem(it){
@@ -4735,6 +4561,7 @@ loadItems = async function(){
       for (const f of files){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
+
         const baseOriginal = decodeSafe(name.split("/").pop() || name).trim();
         const key = normKey(baseOriginal);
         if (key && baseOriginal) map.set(key, baseOriginal);
@@ -4778,7 +4605,6 @@ loadItems = async function(){
 
       const fileUrl = archiveFileUrlFromBasename(base);
       const safeFilename = base.replace(/[\\/:*?"<>|]+/g, "_");
-
       openPdf(it?.title || base, fileUrl, safeFilename);
     });
 
@@ -4825,7 +4651,7 @@ loadItems = async function(){
 
   function init(){
     try{
-      new URL(PDF_PROXY_BASE); // validate
+      new URL(PDF_PROXY_BASE);
 
       ensureCss();
       ensureHeader();
@@ -4844,17 +4670,6 @@ loadItems = async function(){
         ensureHeader();
         enhanceRows();
         return r;
-      });
-
-      // mobile: re-render on resize/orientation (keep 3-per-screen)
-      window.addEventListener("resize", () => {
-        if (!isMobile()) return;
-        const ov = document.getElementById("pdfOverlay");
-        if (!ov || !ov.classList.contains("open")) return;
-        if (!currentMobile.fileUrl) return;
-        renderToken.dead = true;
-        renderToken = { dead: false };
-        renderMobilePdf(currentMobile.fileUrl, currentMobile.filename).catch(()=>{});
       });
 
       loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
