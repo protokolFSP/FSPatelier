@@ -4286,41 +4286,28 @@ loadItems = async function(){
   </script>
 
 <script>
-(function fspPdfAddonStable(){
+(function fspPdfAddon(){
   "use strict";
 
+  // ✅ YOUR WORKER
+  const PDF_PROXY_BASE = "https://pdf-proxy.protokolfsp.workers.dev/";
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // normalized basename -> original basename (IA listing)
-  let pdfNameMap = new Map();
+  let pdfNameMap = new Map(); // normalized basename -> original IA basename
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
   let prevBodyOverflow = "";
 
-  function decodeSafe(s){
-    try { return decodeURIComponent(s); } catch { return String(s || ""); }
-  }
-  function normKey(s){
-    return String(s || "").normalize("NFC").trim();
-  }
-  function isSmallScreen(){
-    try { return window.matchMedia && window.matchMedia("(max-width: 680px)").matches; } catch { return false; }
-  }
-  function isIOSWebKit(){
-    const ua = navigator.userAgent || "";
-    const iOS = /iP(ad|hone|od)/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    const webkit = /WebKit/.test(ua) && !/Edg|OPR/.test(ua);
-    return iOS && webkit;
-  }
+  function decodeSafe(s){ try { return decodeURIComponent(s); } catch { return String(s || ""); } }
+  function normKey(s){ return String(s || "").normalize("NFC").trim(); }
 
   function ensureCss(){
     if (document.getElementById("pdf-addon-css")) return;
     const st = document.createElement("style");
     st.id = "pdf-addon-css";
     st.textContent = `
-      /* force 7th column */
       .headerRow, .itemRow{
         grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
       }
@@ -4330,7 +4317,6 @@ loadItems = async function(){
         }
       }
 
-      /* overlay (desktop) */
       #pdfOverlay{
         position: fixed;
         inset: 0;
@@ -4343,14 +4329,8 @@ loadItems = async function(){
 
       #pdfPanel{
         position: absolute;
-        inset: 14px;
+        inset: 0;
         background: #fff;
-        border: 1.5px solid #d6d6d6;
-        border-right-color: #bdbdbd;
-        border-bottom-color:#b3b3b3;
-        border-radius: 18px;
-        box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
-        overflow: hidden;
         display:flex;
         flex-direction: column;
       }
@@ -4381,7 +4361,7 @@ loadItems = async function(){
 
       .pdfBigBtn{
         height: 56px;
-        min-width: 96px;
+        min-width: 120px;
         padding: 0 18px;
         border-radius: 16px;
         border: 1px solid #d8d8d8;
@@ -4407,7 +4387,7 @@ loadItems = async function(){
       }
 
       @media (max-width: 680px){
-        .pdfBigBtn{ height: 60px; min-width: 110px; font-size: 22px; }
+        .pdfBigBtn{ height: 60px; min-width: 140px; font-size: 22px; }
       }
     `;
     document.head.appendChild(st);
@@ -4417,7 +4397,6 @@ loadItems = async function(){
     const hdr = document.querySelector(".headerRow");
     if (!hdr) return;
     if (hdr.querySelector("[data-pdf-header='1']")) return;
-
     const cell = document.createElement("div");
     cell.className = "headIconCell";
     cell.title = "PDF";
@@ -4448,14 +4427,12 @@ loadItems = async function(){
     const btns = document.createElement("div");
     btns.id = "pdfPanelBtns";
 
-    const dl = document.createElement("a");
+    const dl = document.createElement("button");
     dl.id = "pdfDlBtn";
     dl.className = "pdfBigBtn";
+    dl.type = "button";
     dl.textContent = "İndir";
     dl.title = "İndir";
-    dl.href = "#";
-    dl.target = "_blank";
-    dl.rel = "noopener";
 
     const close = document.createElement("button");
     close.id = "pdfCloseBtn";
@@ -4470,6 +4447,14 @@ loadItems = async function(){
 
     close.addEventListener("click", closePdf);
     ov.addEventListener("click", closePdf);
+
+    dl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const u = dl.dataset.dlUrl || "";
+      const f = dl.dataset.filename || "document.pdf";
+      if (!u) return;
+      downloadNoBlank(u, f);
+    });
 
     btns.appendChild(dl);
     btns.appendChild(close);
@@ -4508,37 +4493,51 @@ loadItems = async function(){
     if (f) f.src = "about:blank";
   }
 
+  function downloadNoBlank(href, filename){
+    const a = document.createElement("a");
+    a.href = href;
+    a.rel = "noopener";
+    a.target = "_self"; // ✅ no blank tab
+    if (filename) a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   function archiveFileUrlFromBasename(base){
     return `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(base)}`;
   }
 
-  function openPdf(titleText, url, filename){
-    // ✅ mobil: native viewer same-tab (scroll düzgün)
-    if (isSmallScreen() || isIOSWebKit()){
-      window.location.href = url;
-      return;
-    }
+  function proxyUrlFor(fileUrl, filename, dl){
+    const u = new URL(PDF_PROXY_BASE);
+    u.searchParams.set("u", fileUrl);
+    u.searchParams.set("dl", dl ? "1" : "0");
+    if (filename) u.searchParams.set("f", filename);
+    return u.toString();
+  }
 
+  function openPdf(titleText, fileUrl, filename){
     ensureCss();
     ensureOverlay();
 
     const ov = document.getElementById("pdfOverlay");
     const t = document.getElementById("pdfPanelTitle");
     const f = document.getElementById("pdfFrame");
-    const dl = document.getElementById("pdfDlBtn");
-    if (!ov || !t || !f || !dl) return;
+    const dlBtn = document.getElementById("pdfDlBtn");
+    if (!ov || !t || !f || !dlBtn) return;
+
+    const viewUrl = proxyUrlFor(fileUrl, filename, false); // inline
+    const dlUrl   = proxyUrlFor(fileUrl, filename, true);  // attachment
 
     t.textContent = titleText || "PDF";
-    dl.href = url || "#";
-    dl.setAttribute("download", filename || "document.pdf");
+    dlBtn.dataset.dlUrl = dlUrl;
+    dlBtn.dataset.filename = filename || "document.pdf";
 
     lockBody();
     ov.classList.add("open");
     ov.setAttribute("aria-hidden","false");
 
-    // some viewers honor FitH
-    const iframeUrl = url.includes("#") ? url : (url + "#view=FitH");
-    requestAnimationFrame(() => { f.src = iframeUrl; });
+    requestAnimationFrame(() => { f.src = viewUrl; });
   }
 
   function buildPdfKeyForItem(it){
@@ -4612,9 +4611,10 @@ loadItems = async function(){
       const base = getPdfOriginalBasename(it);
       if (!base) return;
 
-      const url = archiveFileUrlFromBasename(base);
+      const fileUrl = archiveFileUrlFromBasename(base);
       const safeFilename = base.replace(/[\\/:*?"<>|]+/g, "_");
-      openPdf(it?.title || base, url, safeFilename);
+
+      openPdf(it?.title || base, fileUrl, safeFilename);
     });
 
     return btn;
@@ -4660,6 +4660,7 @@ loadItems = async function(){
 
   function init(){
     try{
+      new URL(PDF_PROXY_BASE); // validate
       ensureCss();
       ensureHeader();
       ensureOverlay();
@@ -4681,11 +4682,11 @@ loadItems = async function(){
 
       loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
     }catch{
-      // never break the main app
+      // never break main app
     }
   }
 
-  if (document.readyState === "loading") {
+  if (document.readyState === "loading"){
     document.addEventListener("DOMContentLoaded", init, { once: true });
   } else {
     init();
