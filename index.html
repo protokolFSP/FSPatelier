@@ -4294,7 +4294,7 @@ loadItems = async function(){
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // key: normalized basename (NFC) -> original decoded basename (IA listing can be NFD)
+  // key: normalized basename (NFC) -> original decoded basename as IA lists it (may be NFD)
   let pdfNameMap = new Map();
   let pdfLoadedAt = 0;
   let pdfLoading = false;
@@ -4304,12 +4304,25 @@ loadItems = async function(){
   function decodeSafe(s){
     try { return decodeURIComponent(s); } catch { return String(s || ""); }
   }
+
   function normKey(s){
     return String(s || "").normalize("NFC").trim();
   }
 
+  function isSmallScreen(){
+    try { return window.matchMedia && window.matchMedia("(max-width: 680px)").matches; } catch { return false; }
+  }
+
+  function isIOSWebKit(){
+    const ua = navigator.userAgent || "";
+    const iOS = /iP(ad|hone|od)/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const webkit = /WebKit/.test(ua) && !/Edg|OPR/.test(ua);
+    return iOS && webkit;
+  }
+
   function ensureCss(){
     if (document.getElementById("pdf-addon-css")) return;
+
     const st = document.createElement("style");
     st.id = "pdf-addon-css";
     st.textContent = `
@@ -4322,7 +4335,7 @@ loadItems = async function(){
         }
       }
 
-      /* PDF overlay */
+      /* Desktop overlay (mobilde kullanılmayacak) */
       #pdfOverlay{
         position: fixed;
         inset: 0;
@@ -4335,8 +4348,14 @@ loadItems = async function(){
 
       #pdfPanel{
         position: absolute;
-        inset: 0;
+        inset: 14px;
         background: #fff;
+        border: 1.5px solid #d6d6d6;
+        border-right-color: #bdbdbd;
+        border-bottom-color:#b3b3b3;
+        border-radius: 18px;
+        box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
+        overflow: hidden;
         display:flex;
         flex-direction: column;
       }
@@ -4366,14 +4385,14 @@ loadItems = async function(){
       #pdfPanelBtns{ display:flex; gap:10px; flex:0 0 auto; }
 
       .pdfBigBtn{
-        height: 48px;
-        min-width: 60px;
-        padding: 0 14px;
-        border-radius: 14px;
+        height: 56px;
+        min-width: 72px;
+        padding: 0 18px;
+        border-radius: 16px;
         border: 1px solid #d8d8d8;
         background: #fff;
         font-weight: 900;
-        font-size: 18px;
+        font-size: 20px;
         cursor: pointer;
         display:inline-flex;
         align-items:center;
@@ -4403,6 +4422,7 @@ loadItems = async function(){
     const cell = document.createElement("div");
     cell.className = "headIconCell";
     cell.title = "PDF";
+    cell.setAttribute("aria-label","PDF");
     cell.textContent = "📄";
     cell.dataset.pdfHeader = "1";
     hdr.appendChild(cell);
@@ -4475,6 +4495,7 @@ loadItems = async function(){
       document.body.style.overflow = "hidden";
     }catch{}
   }
+
   function unlockBody(){
     try{ document.body.style.overflow = prevBodyOverflow; }catch{}
   }
@@ -4490,8 +4511,14 @@ loadItems = async function(){
   }
 
   function openPdf(titleText, url, filename){
-    ensureOverlay();
+    // ✅ Mobil / iOS: iframe yerine native viewer (scroll + fit)
+    if (isSmallScreen() || isIOSWebKit()){
+      window.location.href = url;
+      return;
+    }
+
     ensureCss();
+    ensureOverlay();
 
     const ov = document.getElementById("pdfOverlay");
     const t = document.getElementById("pdfPanelTitle");
@@ -4508,8 +4535,8 @@ loadItems = async function(){
     ov.classList.add("open");
     ov.setAttribute("aria-hidden","false");
 
-    // iframe pdf viewer is flaky on iOS, but this is the stable minimal version
-    requestAnimationFrame(() => { f.src = url; });
+    const iframeUrl = url.includes("#") ? url : (url + "#view=FitH");
+    requestAnimationFrame(() => { f.src = iframeUrl; });
   }
 
   function buildPdfKeyForItem(it){
@@ -4546,6 +4573,7 @@ loadItems = async function(){
         const key = normKey(baseOriginal);
         if (key && baseOriginal) map.set(key, baseOriginal);
       }
+
       pdfNameMap = map;
       pdfLoadedAt = now;
     }catch{
