@@ -4287,34 +4287,130 @@ loadItems = async function(){
 
 
 
+/* ============================================================
+   1) Cloudflare Worker (pdf proxy) — deploy as a new Worker
+   File: worker/pdf-proxy.js
+   URL example:
+     https://YOUR_WORKER_DOMAIN/?u=<ENCODED_ARCHIVE_URL>&dl=0&f=<filename>
+   - dl=0 => inline (viewer)
+   - dl=1 => attachment (download)
+   ============================================================ */
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    // CORS preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders(),
+      });
+    }
+
+    const target = url.searchParams.get("u");
+    if (!target) return withCors(new Response("Missing u", { status: 400 }));
+
+    let upstreamUrl;
+    try {
+      upstreamUrl = new URL(target);
+    } catch {
+      return withCors(new Response("Bad u", { status: 400 }));
+    }
+
+    // only allow archive.org downloads (safety)
+    const allowedHosts = new Set(["archive.org", "www.archive.org"]);
+    if (!allowedHosts.has(upstreamUrl.hostname)) {
+      return withCors(new Response("Host not allowed", { status: 403 }));
+    }
+
+    // pass Range so pdf.js can stream pages
+    const headers = new Headers();
+    const range = request.headers.get("range");
+    if (range) headers.set("range", range);
+
+    // fetch upstream
+    const upstream = await fetch(upstreamUrl.toString(), {
+      method: "GET",
+      headers,
+      cf: {
+        cacheTtl: 3600,
+        cacheEverything: false,
+      },
+    });
+
+    // clone headers & force PDF-friendly headers
+    const outHeaders = new Headers(upstream.headers);
+
+    // Force correct content-type if missing
+    if (!outHeaders.get("content-type")) {
+      outHeaders.set("content-type", "application/pdf");
+    }
+
+    // Content-Disposition control
+    const dl = url.searchParams.get("dl") === "1";
+    const filename = url.searchParams.get("f") || "document.pdf";
+    const safeName = filename.replace(/[\r\n"]/g, "_");
+
+    outHeaders.set(
+      "content-disposition",
+      `${dl ? "attachment" : "inline"}; filename="${safeName}"`
+    );
+
+    // CORS headers
+    for (const [k, v] of Object.entries(corsHeaders())) outHeaders.set(k, v);
+
+    // allow range
+    outHeaders.set("accept-ranges", "bytes");
+
+    return new Response(upstream.body, {
+      status: upstream.status,
+      headers: outHeaders,
+    });
+  },
+};
+
+function corsHeaders() {
+  return {
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET,OPTIONS",
+    "access-control-allow-headers": "Range,Content-Type",
+    "access-control-expose-headers": "Content-Length,Content-Range,Accept-Ranges,Content-Type,Content-Disposition",
+  };
+}
+
+function withCors(resp) {
+  const h = new Headers(resp.headers);
+  for (const [k, v] of Object.entries(corsHeaders())) h.set(k, v);
+  return new Response(resp.body, { status: resp.status, headers: h });
+}
 
 
-  
+/* ============================================================
+   2) SECOND SCRIPT (PDF addon) — paste into your HTML as the
+      second <script> (after the big main script, before </body>)
+   IMPORTANT: set PDF_PROXY_BASE to your deployed worker URL.
+   ============================================================ */
 
-  
-<script>
 (function fspPdfAddonPdfJs(){
   "use strict";
 
+  // ✅ PUT YOUR WORKER URL HERE (ending with /)
+  const PDF_PROXY_BASE = "https://YOUR_PDF_PROXY_WORKER_DOMAIN/"; // e.g. https://fsppdfproxy.protokolfsp.workers.dev/
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // normalized basename (NFC) -> original IA basename (may be NFD)
+  // normalized basename (NFC) -> IA basename (may be NFD)
   let pdfNameMap = new Map();
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
-  // overlay state
   let prevBodyOverflow = "";
-  let current = { title: "", url: "", filename: "" };
+  let current = { title: "", fileUrl: "", proxyUrl: "", filename: "" };
   let renderToken = { dead: false };
 
-  function decodeSafe(s){
-    try { return decodeURIComponent(s); } catch { return String(s || ""); }
-  }
-  function normKey(s){
-    return String(s || "").normalize("NFC").trim();
-  }
+  function decodeSafe(s){ try { return decodeURIComponent(s); } catch { return String(s || ""); } }
+  function normKey(s){ return String(s || "").normalize("NFC").trim(); }
 
   function ensureCss(){
     if (document.getElementById("pdf-addon-css")) return;
@@ -4374,7 +4470,7 @@ loadItems = async function(){
 
       .pdfBigBtn{
         height: 56px;
-        min-width: 76px;
+        min-width: 86px;
         padding: 0 18px;
         border-radius: 16px;
         border: 1px solid #d8d8d8;
@@ -4423,7 +4519,7 @@ loadItems = async function(){
 
       @media (max-width: 680px){
         #pdfBody{ padding: 8px; }
-        .pdfBigBtn{ height: 60px; min-width: 84px; font-size: 22px; }
+        .pdfBigBtn{ height: 60px; min-width: 96px; font-size: 22px; }
       }
     `;
     document.head.appendChild(st);
@@ -4466,7 +4562,7 @@ loadItems = async function(){
     const dl = document.createElement("a");
     dl.id = "pdfDlBtn";
     dl.className = "pdfBigBtn";
-    dl.textContent = "⬇︎";
+    dl.textContent = "İndir";
     dl.title = "İndir";
     dl.href = "#";
     dl.target = "_blank";
@@ -4476,7 +4572,7 @@ loadItems = async function(){
     close.id = "pdfCloseBtn";
     close.className = "pdfBigBtn";
     close.type = "button";
-    close.textContent = "✕";
+    close.textContent = "Kapat";
     close.title = "Kapat";
 
     btns.appendChild(dl);
@@ -4499,6 +4595,7 @@ loadItems = async function(){
 
     close.addEventListener("click", closePdf);
     ov.addEventListener("click", closePdf);
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && ov.classList.contains("open")) closePdf();
     });
@@ -4515,7 +4612,6 @@ loadItems = async function(){
       document.body.style.overflow = "hidden";
     }catch{}
   }
-
   function unlockBody(){
     try{ document.body.style.overflow = prevBodyOverflow; }catch{}
   }
@@ -4543,7 +4639,7 @@ loadItems = async function(){
     unlockBody();
 
     clearPages();
-    current = { title: "", url: "", filename: "" };
+    current = { title: "", fileUrl: "", proxyUrl: "", filename: "" };
   }
 
   async function ensurePdfJs(){
@@ -4561,7 +4657,7 @@ loadItems = async function(){
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
   }
 
-  function openOverlay(titleText, url, filename){
+  function openOverlay(titleText, proxyUrl, filename){
     ensureCss();
     ensureOverlay();
 
@@ -4570,10 +4666,18 @@ loadItems = async function(){
     const dl = document.getElementById("pdfDlBtn");
     if (!ov || !t || !dl) return;
 
-    current = { title: titleText || "PDF", url: url || "", filename: filename || "document.pdf" };
+    current.title = titleText || "PDF";
+    current.proxyUrl = proxyUrl || "";
+    current.filename = filename || "document.pdf";
 
     t.textContent = current.title;
-    dl.href = current.url || "#";
+
+    // download: same proxy but dl=1
+    const dlUrl = new URL(PDF_PROXY_BASE);
+    dlUrl.searchParams.set("u", current.fileUrl);
+    dlUrl.searchParams.set("dl", "1");
+    dlUrl.searchParams.set("f", current.filename);
+    dl.href = dlUrl.toString();
     dl.setAttribute("download", current.filename);
 
     lockBody();
@@ -4581,7 +4685,7 @@ loadItems = async function(){
     ov.setAttribute("aria-hidden","false");
   }
 
-  async function renderPdf(url){
+  async function renderPdf(proxyUrl){
     await ensurePdfJs();
 
     const wrap = document.getElementById("pdfCanvasWrap");
@@ -4595,10 +4699,9 @@ loadItems = async function(){
 
     let pdf;
     try{
-      pdf = await window.pdfjsLib.getDocument({ url, withCredentials: false }).promise;
+      pdf = await window.pdfjsLib.getDocument({ url: proxyUrl, withCredentials: false }).promise;
     }catch{
-      // fallback: eğer pdf.js fetch/cors patlarsa kullanıcı en azından açabilsin
-      setHint("PDF görüntülenemedi. Yeni sekmede açmayı deneyin.");
+      setHint("PDF görüntülenemedi (proxy/CORS).");
       return;
     }
     if (token.dead) return;
@@ -4644,6 +4747,19 @@ loadItems = async function(){
     return pdfNameMap.get(buildPdfKeyForItem(it)) || null;
   }
 
+  function archiveFileUrlFromBasename(base){
+    // direct archive file URL (no UI)
+    return `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(base)}`;
+  }
+
+  function proxyUrlForFile(fileUrl, filename, dl){
+    const u = new URL(PDF_PROXY_BASE);
+    u.searchParams.set("u", fileUrl);
+    u.searchParams.set("dl", dl ? "1" : "0");
+    if (filename) u.searchParams.set("f", filename);
+    return u.toString();
+  }
+
   async function loadPdfIndex(force){
     const now = Date.now();
     if (!force && pdfNameMap.size > 0 && (now - pdfLoadedAt) < PDF_TTL_MS) return;
@@ -4661,7 +4777,6 @@ loadItems = async function(){
       for (const f of files){
         const name = (f && typeof f.name === "string") ? f.name : "";
         if (!name || !/\.pdf$/i.test(name)) continue;
-
         const baseOriginal = decodeSafe(name.split("/").pop() || name).trim();
         const key = normKey(baseOriginal);
         if (key && baseOriginal) map.set(key, baseOriginal);
@@ -4703,15 +4818,19 @@ loadItems = async function(){
       const base = getPdfOriginalBasename(it);
       if (!base) return;
 
-      const url = `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(base)}`;
+      const fileUrl = archiveFileUrlFromBasename(base);
       const safeFilename = base.replace(/[\\/:*?"<>|]+/g, "_");
 
-      // open overlay viewer (desktop + mobile same behavior)
+      // viewer url via proxy (dl=0)
+      const viewerUrl = proxyUrlForFile(fileUrl, safeFilename, false);
+
+      current = { title: it?.title || base, fileUrl, proxyUrl: viewerUrl, filename: safeFilename };
+
       renderToken.dead = true;
       renderToken = { dead: false };
 
-      openOverlay(it?.title || base, url, safeFilename);
-      await renderPdf(url);
+      openOverlay(current.title, current.proxyUrl, current.filename);
+      await renderPdf(current.proxyUrl);
     });
 
     return btn;
@@ -4778,10 +4897,10 @@ loadItems = async function(){
     window.addEventListener("resize", () => {
       const ov = document.getElementById("pdfOverlay");
       if (!ov || !ov.classList.contains("open")) return;
-      if (!current.url) return;
+      if (!current.proxyUrl) return;
       renderToken.dead = true;
       renderToken = { dead: false };
-      renderPdf(current.url);
+      renderPdf(current.proxyUrl);
     });
 
     loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
@@ -4794,5 +4913,10 @@ loadItems = async function(){
   }
 })();
 </script>
+
+  
+
+  
+
 </body>
 </html>
