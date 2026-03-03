@@ -4286,14 +4286,13 @@ loadItems = async function(){
   </script>
 
 <script>
-(function fspPdfAddonIframeOnly(){
+(function fspPdfAddonStreamViewer(){
   "use strict";
 
-  const PDF_PROXY_BASE = "https://pdf-proxy.protokolfsp.workers.dev/";
   const PDF_IA_IDENTIFIER = "FSPpdf";
   const PDF_TTL_MS = 6 * 60 * 60 * 1000;
 
-  let pdfNameMap = new Map();
+  let pdfNameMap = new Map(); // normalized basename -> original IA basename
   let pdfLoadedAt = 0;
   let pdfLoading = false;
 
@@ -4392,6 +4391,7 @@ loadItems = async function(){
     const hdr = document.querySelector(".headerRow");
     if (!hdr) return;
     if (hdr.querySelector("[data-pdf-header='1']")) return;
+
     const cell = document.createElement("div");
     cell.className = "headIconCell";
     cell.title = "PDF";
@@ -4496,19 +4496,17 @@ loadItems = async function(){
     a.remove();
   }
 
-  function archiveFileUrlFromBasename(base){
+  function archiveDownloadUrl(base){
     return `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(base)}`;
   }
 
-  function proxyUrlFor(fileUrl, filename, dl){
-    const u = new URL(PDF_PROXY_BASE);
-    u.searchParams.set("u", fileUrl);
-    u.searchParams.set("dl", dl ? "1" : "0");
-    if (filename) u.searchParams.set("f", filename);
-    return u.toString();
+  // ✅ viewer that doesn't "download" in iframe
+  function archiveStreamViewerUrl(base){
+    // archive bookreader/stream; reliably renders in browser
+    return `https://archive.org/stream/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(base)}#page/n0/mode/2up`;
   }
 
-  function openPdf(titleText, fileUrl, filename){
+  function openPdf(titleText, base){
     ensureCss();
     ensureOverlay();
 
@@ -4518,18 +4516,22 @@ loadItems = async function(){
     const dlBtn = document.getElementById("pdfDlBtn");
     if (!ov || !t || !f || !dlBtn) return;
 
-    const viewUrl = proxyUrlFor(fileUrl, filename, false);
-    const dlUrl   = proxyUrlFor(fileUrl, filename, true);
+    const viewUrl = archiveStreamViewerUrl(base);
+    const dlUrl = archiveDownloadUrl(base);
+
+    const safeFilename = String(base || "document.pdf").replace(/[\\/:*?"<>|]+/g, "_");
 
     t.textContent = titleText || "PDF";
     dlBtn.dataset.dlUrl = dlUrl;
-    dlBtn.dataset.filename = filename || "document.pdf";
+    dlBtn.dataset.filename = safeFilename;
 
     lockBody();
     ov.classList.add("open");
     ov.setAttribute("aria-hidden","false");
 
-    requestAnimationFrame(() => { f.src = viewUrl; });
+    // cache-bust
+    const src = viewUrl + (viewUrl.includes("?") ? "&" : "?") + "v=" + Date.now();
+    requestAnimationFrame(() => { f.src = src; });
   }
 
   function buildPdfKeyForItem(it){
@@ -4603,9 +4605,7 @@ loadItems = async function(){
       const base = getPdfOriginalBasename(it);
       if (!base) return;
 
-      const fileUrl = archiveFileUrlFromBasename(base);
-      const safeFilename = base.replace(/[\\/:*?"<>|]+/g, "_");
-      openPdf(it?.title || base, fileUrl, safeFilename);
+      openPdf(it?.title || base, base);
     });
 
     return btn;
@@ -4651,8 +4651,6 @@ loadItems = async function(){
 
   function init(){
     try{
-      new URL(PDF_PROXY_BASE);
-
       ensureCss();
       ensureHeader();
       ensureOverlay();
