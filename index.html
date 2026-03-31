@@ -430,33 +430,43 @@
 
     @media (max-width: 680px){
       #scrollArea{ padding: 14px; }
-      .headerRow, .itemRow{ grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px; }
+
+      .headerRow, .itemRow{
+        grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px;
+      }
+
       .title{
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       #search{ flex: 1 1 100%; }
       .zoomWrap{ margin-left: 0; }
+      #mobileFiltersToggle{ display:inline-flex; }
 
-      #mobileFiltersToggle{
-        display:inline-flex;
-      }
-
-      #stickyBar.mobileFiltersCollapsed{
-        padding-bottom: 0;
-      }
-
-      #stickyBar.mobileFiltersCollapsed .topbar{
+      body.mobileFiltersCollapsed #stickyBar .topbar{
         display:none;
       }
 
-      #stickyBar.mobileFiltersCollapsed .headerRow{
-        display:none;
+      body.mobileFiltersCollapsed #stickyBar .headerRow{
+        grid-template-columns: minmax(0, 1fr) !important;
       }
 
-      #stickyBar.mobileFiltersCollapsed #meta{
-        margin: 0 0 2px 2px;
+      body.mobileFiltersCollapsed #stickyBar .headerRow > :not(:first-child){
+        display:none !important;
+      }
+
+      body.mobileFiltersCollapsed .itemRow{
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      body.mobileFiltersCollapsed .itemRow > :not(:first-child){
+        display:none !important;
+      }
+
+      body.mobileFiltersCollapsed #meta{
+        margin: 0 0 8px 2px;
       }
     }
 
@@ -1103,7 +1113,6 @@
           <button id="mobileFiltersToggle" type="button" aria-label="Filtreleri göster" aria-expanded="false" title="Filtreler">
             Filtreler
           </button>
-
           <button id="sidebarOpenBtn" type="button" aria-label="Menü" title="Menü">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
@@ -2729,22 +2738,26 @@
       const open = !!forceOpen;
 
       if (!isMobile){
-        stickyBar.classList.remove("mobileFiltersCollapsed");
+        document.body.classList.remove("mobileFiltersCollapsed");
         mobileFiltersToggle.classList.remove("on");
         mobileFiltersToggle.setAttribute("aria-expanded", "true");
         mobileFiltersToggle.setAttribute("aria-label", "Filtreler");
         mobileFiltersToggle.textContent = "Filtreler";
+        setTimeout(() => {
+          try{ updateSticky(true); }catch{}
+        }, 0);
         return;
       }
 
-      stickyBar.classList.toggle("mobileFiltersCollapsed", !open);
+      document.body.classList.toggle("mobileFiltersCollapsed", !open);
+
       mobileFiltersToggle.classList.toggle("on", open);
       mobileFiltersToggle.setAttribute("aria-expanded", String(open));
       mobileFiltersToggle.setAttribute("aria-label", open ? "Filtreleri gizle" : "Filtreleri göster");
       mobileFiltersToggle.textContent = open ? "Filtreleri Gizle" : "Filtreler";
 
       setTimeout(() => {
-        try{ updateSticky(true); } catch {}
+        try{ updateSticky(true); }catch{}
       }, 0);
     }
 
@@ -2754,7 +2767,7 @@
 
     function toggleMobileFilters(){
       if (!isMobileFiltersMode()) return;
-      const nextOpen = stickyBar.classList.contains("mobileFiltersCollapsed");
+      const nextOpen = document.body.classList.contains("mobileFiltersCollapsed");
       saveMobileFiltersOpen(nextOpen);
       applyMobileFiltersState(nextOpen);
     }
@@ -3495,6 +3508,7 @@
       updateSticky(true);
       restoreMobileFiltersState();
     });
+
     window.addEventListener("orientationchange", () => setTimeout(() => {
       clampPlayerToViewport();
       updateOverlayScale();
@@ -3504,6 +3518,7 @@
       updateSticky(true);
       restoreMobileFiltersState();
     }, 150));
+
     if (window.visualViewport){
       window.visualViewport.addEventListener("resize", () => {
         clampPlayerToViewport();
@@ -3549,10 +3564,12 @@
       updateOverlayScale();
       setSortIcons();
     }
+
     function closeSidebar(){
       sbOverlay.classList.remove("open");
       sbOverlay.setAttribute("aria-hidden", "true");
     }
+
     sidebarOpenBtn.addEventListener("click", (e) => { e.stopPropagation(); openSidebar(); });
     sbCloseBtn.addEventListener("click", (e) => { e.stopPropagation(); closeSidebar(); });
     sbOverlay.addEventListener("click", (e) => {
