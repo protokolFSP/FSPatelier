@@ -4145,6 +4145,14 @@
     const ATELIER_IA_IDENTIFIER = "FSPneu";
     const ATELIER_SRC = "CITY";
     const ATELIER_TX_SUBDIR = "FSPab26";
+   
+    const ATELIER_EXTRA_SOURCES = [
+  {
+    identifier: "sprunggelenk-distorsion-frau-florin-krone-27-05-25_20250726",
+    src: "THURINGEN",
+    titlePrefix: "Thüringen"
+  }
+];
 
     const ATELIER_CITY_PREFIXES = [
       "Dusseldorf", "Düsseldorf",
@@ -4218,7 +4226,34 @@
 
       return list;
     }
+function __atelierMakeExtraItemsFromFiles(files, source){
+  return (files || [])
+    .filter(f => typeof f?.name === "string")
+    .filter(f => {
+      const name = String(f.name).toLowerCase();
+      if (!(name.endsWith(".mp3") || name.endsWith(".m4a"))) return false;
+      if (!("source" in f)) return true;
+      return String(f.source || "").toLowerCase() === "original";
+    })
+    .map((f, idx) => {
+      const name = f.name || "";
+      const rawTitle =
+        String(f.title || "").trim() ||
+        decodeURIComponentSafe(name.split("/").pop() || name).replace(/\.(mp3|m4a)$/i, "");
 
+      const title = `${source.titlePrefix} ${rawTitle}`;
+      const url = buildDownloadUrl(source.identifier, name);
+
+      const localId = name || url || (title + "#" + idx);
+      const id = source.src + "|" + localId;
+
+      const txtCandidates = buildTxtNameCandidates({ name });
+      const txtName = txtCandidates?.length ? txtCandidates[0] : replaceExtToTxt(name);
+      const txtUrl = txtName ? (TXT_BASES[0] + encodeURIComponent(txtName)) : "";
+
+      return { id, title, name, url, src: source.src, txtName, txtUrl };
+    });
+}
     const __orig_loadItems = loadItems;
 
     loadItems = async function(){
@@ -4267,7 +4302,22 @@
         }
 
         const files = Array.isArray(j.files) ? j.files : [];
-        const list = __atelierMakeItemsFromFiles(files);
+      let list = __atelierMakeItemsFromFiles(files);
+
+for (const source of ATELIER_EXTRA_SOURCES){
+  try{
+    const extraMetaUrl = `https://archive.org/metadata/${encodeURIComponent(source.identifier)}`;
+    const extraRes = await fetch(extraMetaUrl, { cache: FORCE_REFRESH ? "no-store" : "no-cache" });
+    if (!extraRes.ok) continue;
+
+    const extraJson = await extraRes.json();
+    const extraFiles = Array.isArray(extraJson.files) ? extraJson.files : [];
+
+    list = list.concat(__atelierMakeExtraItemsFromFiles(extraFiles, source));
+  }catch(err){
+    console.warn("Extra source yüklenemedi:", source.identifier, err);
+  }
+}
 
         const newFp = itemsFingerprint(list);
         const oldFp = itemsFingerprint(items);
