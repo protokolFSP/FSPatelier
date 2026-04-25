@@ -8,13 +8,13 @@
 
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>FSP Audio —Atelier; Eyaletlere göre</title>
+  <title>FSP Audio — Güncel</title>
 
   <meta name="description" content="FSP Audio — Güncel kayıt listesi ve oynatıcı." />
 
   <meta property="og:type" content="website" />
 
-  <meta property="og:title" content="FSP Audio Atelier; Eyaletlere göre" />
+  <meta property="og:title" content="FSP Audio — Güncel" />
 
   <meta property="og:description" content="Güncel FSP kayıtları..." />
 
@@ -36,13 +36,13 @@
 
     window.dataLayer = window.dataLayer || [];
 
-    function gtag(){dataLayer.push(arguments);}
+    function gtag(){ dataLayer.push(arguments); }
 
-    gtag('js', new Date());
+    gtag("js", new Date());
 
-    const __isDebug = new URLSearchParams(location.search).has('debug');
+    const __isDebug = new URLSearchParams(location.search).has("debug");
 
-    gtag('config', 'G-TNRQ49C157', { debug_mode: __isDebug, send_page_view: true });
+    gtag("config", "G-TNRQ49C157", { debug_mode: __isDebug, send_page_view: true });
 
   </script>
 
@@ -160,59 +160,39 @@
 
     }
 
-    .pageTitleActions{
+    .pageTitleMain{
 
       display:flex;
 
-      align-items:center;
+      flex-direction:column;
 
-      gap:8px;
+      gap:6px;
 
-      flex: 0 0 auto;
-
-    }
-
-    #mobileFiltersToggle{
-
-      display:none;
-
-      height: 40px;
-
-      padding: 0 14px;
-
-      border-radius: 14px;
-
-      border: 1px solid #d8d8d8;
-
-      background: white;
-
-      cursor: pointer;
-
-      user-select:none;
-
-      font-size: .96rem;
-
-      font-weight: 650;
-
-      align-items:center;
-
-      justify-content:center;
-
-      line-height: 1;
-
-      -webkit-tap-highlight-color: transparent;
+      min-width:0;
 
     }
 
-    #mobileFiltersToggle:hover{ background: var(--hover); }
+    .buildMeta{
 
-    #mobileFiltersToggle.on{
+      font-size: .82rem;
 
-      border-color:var(--blue);
+      font-weight: 750;
+
+      color: #3563c9;
 
       background: rgba(43,124,255,.10);
 
-      box-shadow: 0 0 0 3px rgba(43,124,255,.12) inset;
+      border: 1px solid rgba(43,124,255,.18);
+
+      border-radius: 999px;
+
+      padding: 5px 10px;
+
+      line-height: 1;
+
+      align-self: flex-start;
+
+      white-space: nowrap;
 
     }
 
@@ -330,11 +310,7 @@
 
       border-radius: 16px;
 
-      box-shadow:
-
-        0 1px 0 rgba(0,0,0,.06),
-
-        0 10px 18px rgba(0,0,0,.05);
+      box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 10px 18px rgba(0,0,0,.05);
 
     }
 
@@ -348,11 +324,7 @@
 
       border-radius: 16px;
 
-      box-shadow:
-
-        0 1px 0 rgba(0,0,0,.06),
-
-        0 14px 28px rgba(0,0,0,.10);
+      box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 14px 28px rgba(0,0,0,.10);
 
     }
 
@@ -538,11 +510,19 @@
 
       display: grid;
 
-      grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px;
+      grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px;
 
       align-items: center;
 
       column-gap: 8px;
+
+    }
+
+    body.toolsHidden .headerRow,
+
+    body.toolsHidden .itemRow{
+
+      grid-template-columns: minmax(0, 1fr) 8ch 36px !important;
 
     }
 
@@ -589,6 +569,26 @@
       justify-content:center;
 
       user-select:none;
+
+    }
+
+    body.toolsHidden .headerRow > :nth-child(3),
+
+    body.toolsHidden .headerRow > :nth-child(4),
+
+    body.toolsHidden .headerRow > :nth-child(5),
+
+    body.toolsHidden .headerRow > :nth-child(6),
+
+    body.toolsHidden .itemRow > :nth-child(3),
+
+    body.toolsHidden .itemRow > :nth-child(4),
+
+    body.toolsHidden .itemRow > :nth-child(5),
+
+    body.toolsHidden .itemRow > :nth-child(6){
+
+      display:none !important;
 
     }
 
@@ -670,11 +670,7 @@
 
     .iconBlue{ fill: var(--blue); }
 
-    #list{
-
-      border-bottom: 1px solid var(--border);
-
-    }
+    #list{ border-bottom: 1px solid var(--border); }
 
     .itemRow{
 
@@ -688,11 +684,7 @@
 
     }
 
-    #list .itemRow:nth-child(even){
-
-      background: #eeeeee;
-
-    }
+    #list .itemRow:nth-child(even){ background: #eeeeee; }
 
     .itemRow:hover{ background: var(--hover); }
 
@@ -778,63 +770,37 @@
 
     }
 
-  @media (max-width: 680px){
+    @media (max-width: 680px){
 
-  #scrollArea{ padding: 14px; }
+      #scrollArea{ padding: 14px; }
 
-  .headerRow, .itemRow{
+      .headerRow, .itemRow{ grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px; }
 
-    grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px;
+      body.toolsHidden .headerRow,
 
-  }
+      body.toolsHidden .itemRow{
 
-  .title{
+        grid-template-columns: minmax(0, 1fr) 8ch 34px !important;
 
-    white-space: nowrap;
+      }
 
-    overflow: hidden;
+      .title{
 
-    text-overflow: ellipsis;
+        white-space: nowrap;
 
-  }
+        overflow: hidden;
 
-  #search{ flex: 1 1 100%; }
+        text-overflow: ellipsis;
 
-  .zoomWrap{ margin-left: 0; }
+      }
 
-  #mobileFiltersToggle{ display:inline-flex; }
+      #search{ flex: 1 1 100%; }
 
-  body.mobileFiltersCollapsed #stickyBar .headerRow{
+      .zoomWrap{ margin-left: 0; }
 
-    grid-template-columns: minmax(0, 1fr) !important;
+      .buildMeta{ font-size: .78rem; }
 
-  }
-
-  body.mobileFiltersCollapsed #stickyBar .headerRow > :not(:first-child){
-
-    display:none !important;
-
-  }
-
-  body.mobileFiltersCollapsed .itemRow{
-
-    grid-template-columns: minmax(0, 1fr) !important;
-
-  }
-
-  body.mobileFiltersCollapsed .itemRow > :not(:first-child){
-
-    display:none !important;
-
-  }
-
-  body.mobileFiltersCollapsed #meta{
-
-    margin: 0 0 8px 2px;
-
-  }
-
-}
+    }
 
     .iconBtn{
 
@@ -928,7 +894,7 @@
 
       bottom: max(18px, env(safe-area-inset-bottom));
 
-      width: min(720px, calc(100vw - 36px));
+      width: min(760px, calc(100vw - 36px));
 
       background: white;
 
@@ -994,11 +960,7 @@
 
       position: relative;
 
-      box-shadow:
-
-        inset 0 1px 0 rgba(255,255,255,.85),
-
-        inset 0 -1px 0 rgba(0,0,0,.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.85), inset 0 -1px 0 rgba(0,0,0,.04);
 
     }
 
@@ -1012,15 +974,7 @@
 
       height: 2px;
 
-      background: linear-gradient(
-
-        to bottom,
-
-        rgba(0,0,0,.18),
-
-        rgba(255,255,255,.80)
-
-      );
+      background: linear-gradient(to bottom, rgba(0,0,0,.18), rgba(255,255,255,.80));
 
     }
 
@@ -1054,6 +1008,10 @@
 
       flex: 0 0 auto;
 
+      flex-wrap: wrap;
+
+      justify-content: flex-end;
+
     }
 
     .miniBtn{
@@ -1075,6 +1033,8 @@
       align-items:center;
 
       justify-content:center;
+
+      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .15s ease;
 
     }
 
@@ -1220,15 +1180,7 @@
 
       }
 
-      #fpHeaderRight{
-
-        width: 100%;
-
-        justify-content: flex-end;
-
-        flex-wrap: wrap;
-
-      }
+      #fpHeaderRight{ width: 100%; justify-content: flex-end; }
 
       #search{ font-size: 16px; }
 
@@ -1278,7 +1230,7 @@
 
       width: min(360px, calc(100vw - 24px));
 
-      height: min(86vh, 720px);
+      height: min(86vh, 760px);
 
       background: #fff;
 
@@ -1449,6 +1401,8 @@
       user-select:none;
 
       line-height: 1;
+
+      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
 
     }
 
@@ -1838,11 +1792,7 @@
 
       border-top-right-radius: 18px;
 
-      box-shadow:
-
-        inset 0 1px 0 rgba(255,255,255,.90),
-
-        0 6px 16px rgba(0,0,0,.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.90), 0 6px 16px rgba(0,0,0,.10);
 
     }
 
@@ -2004,9 +1954,357 @@
 
     #fpTxtBtn.on .btnMark{ color: #0b5fff; }
 
+    #skipDrawerBtn{
+
+      width:auto;
+
+      min-width:64px;
+
+      padding:0 12px;
+
+      border-radius:12px;
+
+      border-color: rgba(22,163,74,.50);
+
+    }
+
+    #skipDrawerBtn .btnMark{
+
+      font-weight:900;
+
+      font-size:14px;
+
+      letter-spacing:.4px;
+
+      line-height:1;
+
+    }
+
+    #skipDrawerBtn.on{
+
+      border-color: var(--green);
+
+      background: rgba(22,163,74,.12);
+
+      box-shadow: var(--greenGlow);
+
+    }
+
+    #skipDrawerBtn.breathing{
+
+      animation: skipBreath 1.8s ease-in-out infinite;
+
+    }
+
+    @keyframes skipBreath{
+
+      0%,100%{
+
+        transform: scale(1);
+
+        box-shadow: 0 0 0 0 rgba(22,163,74,.18), 0 0 0 3px rgba(22,163,74,.10) inset;
+
+      }
+
+      50%{
+
+        transform: scale(1.04);
+
+        box-shadow: 0 0 0 10px rgba(22,163,74,0), 0 0 0 3px rgba(22,163,74,.16) inset, 0 0 14px rgba(22,163,74,.16);
+
+      }
+
+    }
+
+    .skipDrawer{
+
+      padding: 0 12px 12px 12px;
+
+      animation: skipDrawerIn .18s ease;
+
+    }
+
+    .skipDrawerInner{
+
+      border: 1px solid #e2e2e2;
+
+      border-radius: 14px;
+
+      background: #fbfbfb;
+
+      padding: 10px;
+
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+
+    }
+
+    .skipRow{
+
+      display:flex;
+
+      gap:8px;
+
+      flex-wrap:wrap;
+
+      align-items:center;
+
+      margin-bottom:8px;
+
+    }
+
+    .skipRangeRow label{
+
+      min-width:120px;
+
+      font-size:.92rem;
+
+      font-weight:650;
+
+    }
+
+    .skipRangeRow input[type="range"]{
+
+      flex:1 1 180px;
+
+    }
+
+    .skipRangeRow span{
+
+      min-width:72px;
+
+      text-align:right;
+
+      font-variant-numeric: tabular-nums;
+
+      color:#404040;
+
+      font-size:.92rem;
+
+    }
+
+    .skipHint{
+
+      color: var(--muted);
+
+      font-size: .88rem;
+
+      line-height: 1.25;
+
+      margin-top: 4px;
+
+    }
+
+    .skipEngineLabel{
+
+      height: 30px;
+
+      padding: 0 10px;
+
+      border-radius: 999px;
+
+      border: 1px solid rgba(22,163,74,.26);
+
+      background: rgba(22,163,74,.08);
+
+      color: #166534;
+
+      display:inline-flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+      font-size: .86rem;
+
+      font-weight: 800;
+
+      line-height: 1;
+
+    }
+
+    .skipStats{
+
+      display:grid;
+
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      gap: 8px;
+
+      margin-top: 8px;
+
+    }
+
+    .skipStat{
+
+      border: 1px solid #e2e2e2;
+
+      border-radius: 12px;
+
+      background: white;
+
+      padding: 8px 10px;
+
+    }
+
+    .skipStatLabel{
+
+      color: var(--muted);
+
+      font-size: .8rem;
+
+      line-height: 1.1;
+
+      margin-bottom: 4px;
+
+    }
+
+    .skipStatValue{
+
+      font-weight: 800;
+
+      font-variant-numeric: tabular-nums;
+
+      line-height: 1.1;
+
+    }
+
+    @keyframes skipDrawerIn{
+
+      from{ opacity:0; transform:translateY(-6px); }
+
+      to{ opacity:1; transform:translateY(0); }
+
+    }
+
+    #pdfOverlay{
+
+      position: fixed;
+
+      inset: 0;
+
+      background: rgba(0,0,0,.30);
+
+      z-index: 10100;
+
+      display:none;
+
+    }
+
+    #pdfOverlay.open{ display:block; }
+
+    #pdfPanel{
+
+      position:absolute;
+
+      inset: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+
+      background:#fff;
+
+      border-radius: 18px;
+
+      border: 1.5px solid #d6d6d6;
+
+      border-right-color: #bdbdbd;
+
+      border-bottom-color:#b3b3b3;
+
+      box-shadow: 10px 34px 86px rgba(0,0,0,.20), 4px 14px 30px rgba(0,0,0,.10), 0px 2px 6px rgba(0,0,0,.06);
+
+      display:flex;
+
+      flex-direction:column;
+
+      overflow:hidden;
+
+    }
+
+    #pdfHeader{
+
+      padding:10px 12px;
+
+      background:#fbfbfb;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:space-between;
+
+      gap:10px;
+
+      border-bottom:1px solid #ececec;
+
+    }
+
+    #pdfTitle{
+
+      font-weight:700;
+
+      white-space:nowrap;
+
+      overflow:hidden;
+
+      text-overflow:ellipsis;
+
+      min-width:0;
+
+      flex:1 1 auto;
+
+    }
+
+    #pdfBtns{
+
+      display:flex;
+
+      gap:8px;
+
+      flex-wrap:wrap;
+
+    }
+
+    .pdfBtn{
+
+      height:38px;
+
+      padding:0 12px;
+
+      border-radius:12px;
+
+      border:1px solid #d8d8d8;
+
+      background:#fff;
+
+      cursor:pointer;
+
+      font-weight:700;
+
+      display:inline-flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+    }
+
+    .pdfBtn:hover{ background: var(--hover); }
+
+    #pdfFrame{
+
+      width:100%;
+
+      height:100%;
+
+      border:0;
+
+      background:#fff;
+
+      flex:1 1 auto;
+
+    }
+
   </style>
 
-  </head>
+</head>
 
 <body>
 
@@ -2016,27 +2314,23 @@
 
       <div class="pageTitle">
 
-        <span>FSP Audio Atelier - Eyaletlere göre</span>
+        <div class="pageTitleMain">
 
-        <div class="pageTitleActions">
+          <span>FSP Audio — Güncel</span>
 
-          <button id="mobileFiltersToggle" type="button" aria-label="Filtreleri göster" aria-expanded="false" title="Filtreler">
-
-            Filtreler
-
-          </button>
-
-          <button id="sidebarOpenBtn" type="button" aria-label="Menü" title="Menü">
-
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-
-              <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
-
-            </svg>
-
-          </button>
+          <div id="buildMeta" class="buildMeta">v1.87 · Güncelleme: 17.04.2026 · 17:30</div>
 
         </div>
+
+        <button id="sidebarOpenBtn" type="button" aria-label="Menü" title="Menü">
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+
+            <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
+
+          </svg>
+
+        </button>
 
       </div>
 
@@ -2051,6 +2345,14 @@
         <a class="navLink" href="https://protokolfsp.github.io/Tlcfsp/">TLC</a>
 
         <a class="navLink" href="https://protokolfsp.github.io/MenschiB/">MenschiB</a>
+
+        <a class="navLink" href="https://protokolfsp.github.io/FSP-pdfs/">FSP-PDFs</a>
+
+        <a class="navLink" href="https://protokolfsp.github.io/FSP_DrYemliha/">DrYemliha Notları</a>
+
+        <a class="navLink" href="https://protokolfsp.github.io/FSP-Notlari/">FSP-NOTLARI</a>
+
+        <a class="navLink" href="https://protokolfsp.github.io/FSPatelier/?refresh=1/">FSPatelier</a>
 
       </nav>
 
@@ -2186,6 +2488,12 @@
 
           </div>
 
+          <div class="headIconCell" title="PDF">
+
+            <span aria-hidden="true">📄</span>
+
+          </div>
+
         </div>
 
       </div>
@@ -2226,7 +2534,7 @@
 
           </div>
 
-          <div class="sbHint">Listeyi yenile: Archive.org metadata tekrar okunur. (refresh parametresi yok)</div>
+          <div class="sbHint">Listeyi yenile: Archive.org metadata tekrar okunur.</div>
 
         </div>
 
@@ -2252,7 +2560,21 @@
 
           </div>
 
-          <div class="sbHint">Sıralama butonu: modu seçer. Aynı moda tekrar basarsan yön değişir.</div>
+          <div class="sbHint">Aynı sıralama moduna tekrar basınca yön değişir.</div>
+
+        </div>
+
+        <div class="sbSection">
+
+          <h3>Görünüm</h3>
+
+          <div class="sbRow">
+
+            <button id="sbToolsToggleBtn" class="sbBtn" type="button">Tools Gizle</button>
+
+          </div>
+
+          <div class="sbHint">Play / favori / indir / download count kolonlarını gizler. PDF kolonu kalır.</div>
 
         </div>
 
@@ -2266,7 +2588,7 @@
 
           </div>
 
-          <div class="sbHint">TXT’ler sadece tıklandığında yüklenir. Cache temizle: popup tekrar indirir.</div>
+          <div class="sbHint">TXT sadece açılınca yüklenir.</div>
 
         </div>
 
@@ -2314,6 +2636,12 @@
 
         </button>
 
+        <button id="skipDrawerBtn" class="miniBtn" type="button" title="Sessiz atlama ayarları" aria-expanded="false" aria-controls="skipDrawer">
+
+          <span class="btnMark">SKIP</span>
+
+        </button>
+
         <div id="speedWrap" class="speedWrap" aria-label="Hız">
 
           <button id="slowBtn" class="speedCtlBtn" type="button" title="Yavaşlat (🐢)">🐢</button>
@@ -2351,6 +2679,86 @@
     <div id="fpBody">
 
       <audio id="player" class="js-player" controls preload="metadata"></audio>
+
+    </div>
+
+    <div id="skipDrawer" class="skipDrawer" hidden>
+
+      <div class="skipDrawerInner">
+
+        <div class="skipRow">
+
+          <button id="skipEnableBtn" class="sbBtn" type="button">Sessiz atlama: Kapalı</button>
+
+          <span id="skipEngineLabel" class="skipEngineLabel">Hazır değil</span>
+
+        </div>
+
+        <div class="skipRow">
+
+          <button id="skipModeLight" class="sbBtn" type="button">Hafif</button>
+
+          <button id="skipModeBalanced" class="sbBtn" type="button">Dengeli</button>
+
+          <button id="skipModeAggressive" class="sbBtn" type="button">Agresif</button>
+
+          <button id="skipModeUltra" class="sbBtn" type="button">Ultra</button>
+
+          <button id="skipModeMax" class="sbBtn" type="button">Max</button>
+
+        </div>
+
+        <div class="skipRow skipRangeRow">
+
+          <label for="skipMinGapRange">Min. segment</label>
+
+          <input id="skipMinGapRange" type="range" min="15" max="800" step="5" value="15" />
+
+          <span id="skipMinGapValue">15ms</span>
+
+        </div>
+
+        <div class="skipRow skipRangeRow">
+
+          <label for="skipFadeRange">Geçiş</label>
+
+          <input id="skipFadeRange" type="range" min="0" max="120" step="2" value="0" />
+
+          <span id="skipFadeValue">0ms</span>
+
+        </div>
+
+        <div class="skipHint" id="skipHint">Silence map bekleniyor…</div>
+
+        <div class="skipStats">
+
+          <div class="skipStat">
+
+            <div class="skipStatLabel">Tahmini kazanç</div>
+
+            <div id="skipEstimatedValue" class="skipStatValue">0 sn</div>
+
+          </div>
+
+          <div class="skipStat">
+
+            <div class="skipStatLabel">Bu dosyada</div>
+
+            <div id="skipFileSavedValue" class="skipStatValue">0 sn</div>
+
+          </div>
+
+          <div class="skipStat">
+
+            <div class="skipStatLabel">Bu oturumda</div>
+
+            <div id="skipSessionSavedValue" class="skipStatValue">0 sn</div>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
@@ -2450,23 +2858,49 @@
 
   </div>
 
+  <div id="pdfOverlay" aria-hidden="true">
+
+    <div id="pdfPanel" role="dialog" aria-label="PDF">
+
+      <div id="pdfHeader">
+
+        <div id="pdfTitle">PDF</div>
+
+        <div id="pdfBtns">
+
+          <button id="pdfDownloadBtn" class="pdfBtn" type="button">İndir</button>
+
+          <button id="pdfCloseBtn" class="pdfBtn" type="button">Kapat</button>
+
+        </div>
+
+      </div>
+
+      <iframe id="pdfFrame" title="PDF"></iframe>
+
+    </div>
+
+  </div>
+
   <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
   <script>
 
+    const BUILD_VERSION = "v1.87";
+
+    const BUILD_UPDATED = "17.04.2026 · 17:30";
+
     const IA_IDENTIFIER_1 = "vorhofflimmern-bei-bekannter-khk-dr-oemer-dr-remzi-09.05.25";
+
+    const IA_IDENTIFIER_2 = "FSPneu";
+
+    const IA2_SRC = "S2";
+
+    const IA2_TX_SUBDIR = "FSPab26";
 
     const DL_PROXY = "https://fspdownload.protokolfsp.workers.dev/";
 
     const COUNTER_API = "https://fspdlcounter.protokolfsp.workers.dev";
-
-    const SRT_INDEX_API = "https://api.github.com/repos/protokolFSP/FSPtranskript/contents/transcripts?ref=main";
-
-    const SRT_INDEX_TTL_MS = 24 * 60 * 60 * 1000;
-
-    const SRT_INDEX_LS_KEY = "fsp1.srt.index.v1";
-
-    const SRT_INDEX_LS_AT  = "fsp1.srt.index.at.v1";
 
     const SRT_BASES = [
 
@@ -2510,25 +2944,25 @@
 
     const scrollArea = document.getElementById("scrollArea");
 
-    const listEl   = document.getElementById("list");
+    const listEl = document.getElementById("list");
 
     const searchEl = document.getElementById("search");
 
-    const metaEl   = document.getElementById("meta");
+    const metaEl = document.getElementById("meta");
 
     const statusEl = document.getElementById("status");
 
     const stickyBar = document.getElementById("stickyBar");
 
-    const stickyPh  = document.getElementById("stickyBarPh");
-
-    const mobileFiltersToggle = document.getElementById("mobileFiltersToggle");
+    const stickyPh = document.getElementById("stickyBarPh");
 
     const appScaleEl = document.getElementById("appScale");
 
     const zoomOutBtn = document.getElementById("zoomOutBtn");
 
-    const zoomInBtn  = document.getElementById("zoomInBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+
+    const buildMetaEl = document.getElementById("buildMeta");
 
     const fp = document.getElementById("floatingPlayer");
 
@@ -2550,33 +2984,65 @@
 
     const ccSmallBtn = document.getElementById("ccSmallBtn");
 
-    const ccMedBtn   = document.getElementById("ccMedBtn");
+    const ccMedBtn = document.getElementById("ccMedBtn");
 
-    const ccXBtn     = document.getElementById("ccXBtn");
+    const ccXBtn = document.getElementById("ccXBtn");
 
-    const fpTxtBtn   = document.getElementById("fpTxtBtn");
+    const fpTxtBtn = document.getElementById("fpTxtBtn");
 
-    const captionsDock = document.getElementById("captionsDock");
+    const skipDrawerBtn = document.getElementById("skipDrawerBtn");
+
+    const skipDrawer = document.getElementById("skipDrawer");
+
+    const skipEnableBtn = document.getElementById("skipEnableBtn");
+
+    const skipEngineLabel = document.getElementById("skipEngineLabel");
+
+    const skipModeLight = document.getElementById("skipModeLight");
+
+    const skipModeBalanced = document.getElementById("skipModeBalanced");
+
+    const skipModeAggressive = document.getElementById("skipModeAggressive");
+
+    const skipModeUltra = document.getElementById("skipModeUltra");
+
+    const skipModeMax = document.getElementById("skipModeMax");
+
+    const skipMinGapRange = document.getElementById("skipMinGapRange");
+
+    const skipMinGapValue = document.getElementById("skipMinGapValue");
+
+    const skipFadeRange = document.getElementById("skipFadeRange");
+
+    const skipFadeValue = document.getElementById("skipFadeValue");
+
+    const skipHintEl = document.getElementById("skipHint");
+
+    const skipEstimatedValueEl = document.getElementById("skipEstimatedValue");
+
+    const skipFileSavedValueEl = document.getElementById("skipFileSavedValue");
+
+    const skipSessionSavedValueEl = document.getElementById("skipSessionSavedValue");
 
     const captionsEl = document.getElementById("captions");
 
-    const filterFavBtn  = document.getElementById("filterFav");
+    const filterFavBtn = document.getElementById("filterFav");
 
-    const resetBtn      = document.getElementById("resetBtn");
+    const resetBtn = document.getElementById("resetBtn");
 
-    const sortDurBtn  = document.getElementById("sortDurBtn");
+    const sortDurBtn = document.getElementById("sortDurBtn");
 
     const sortDurIcon = document.getElementById("sortDurIcon");
 
-    const sortDateBtn  = document.getElementById("sortDateBtn");
+    const sortDateBtn = document.getElementById("sortDateBtn");
 
     const sortDateIcon = document.getElementById("sortDateIcon");
 
-    const sortPlayBtn  = document.getElementById("sortPlayBtn");
+    const sortPlayBtn = document.getElementById("sortPlayBtn");
 
     const sortPlayIcon = document.getElementById("sortPlayIcon");
 
-    const sortDlCountBtn  = document.getElementById("sortDlCountBtn");
+    const sortDlCountBtn = document.getElementById("sortDlCountBtn");
 
     const sortDlCountIcon = document.getElementById("sortDlCountIcon");
 
@@ -2601,6 +3067,8 @@
     const sbSortDlBtn = document.getElementById("sbSortDlBtn");
 
     const sbClearTxCacheBtn = document.getElementById("sbClearTxCacheBtn");
+
+    const sbToolsToggleBtn = document.getElementById("sbToolsToggleBtn");
 
     const txPanel = document.getElementById("txPanel");
 
@@ -2634,13 +3102,99 @@
 
     const txMatchCountEl = document.getElementById("txMatchCount");
 
+    const pdfOverlay = document.getElementById("pdfOverlay");
+
+    const pdfFrame = document.getElementById("pdfFrame");
+
+    const pdfTitleEl = document.getElementById("pdfTitle");
+
+    const pdfDownloadBtn = document.getElementById("pdfDownloadBtn");
+
+    const pdfCloseBtn = document.getElementById("pdfCloseBtn");
+
     const plyr = new Plyr(playerEl, {
 
       seekTime: 6.5,
 
-      controls: ["rewind","play","fast-forward","progress","current-time","duration","mute","volume"]
+      controls: ["rewind", "play", "fast-forward", "progress", "current-time", "duration", "mute", "volume"]
 
     });
+
+    if (buildMetaEl) buildMetaEl.textContent = `${BUILD_VERSION} · Güncelleme: ${BUILD_UPDATED}`;
+
+    const LS = {
+
+      favs: "fsp1.favs.v1",
+
+      pos: "fsp1.fp.pos.v1",
+
+      durs: "fsp1.durs.v1",
+
+      sortMode: "fsp1.sort.mode.v2",
+
+      sortDirDur: "fsp1.sort.dur.dir.v1",
+
+      sortDirDate: "fsp1.sort.date.dir.v1",
+
+      sortDirPlay: "fsp1.sort.play.dir.v1",
+
+      sortDirDl: "fsp1.sort.dl.dir.v1",
+
+      speed: "fsp1.speed.v1",
+
+      zoom: "fsp1.ui.zoom.v1",
+
+      captionsMode: "fsp1.captions.mode.v1",
+
+      itemsCache: "fsp1.items.cache.s1.v2",
+
+      itemsCacheAt: "fsp1.items.cache.s1.at.v1",
+
+      metaUpdated: "fsp1.items.meta.updated.s1.v1",
+
+      uiState: "fsp1.ui.state.v1",
+
+      txSize: "fsp1.tx.size.v1",
+
+      txPos: "fsp1.tx.pos.v1",
+
+      skipSettings: "fsp1.skip.settings.map.v4",
+
+      skipDrawerOpen: "fsp1.skip.drawer.open.v1",
+
+      toolsHidden: "fsp1.tools.hidden.v1"
+
+    };
+
+    const loadMap = (k) => { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch { return {}; } };
+
+    const saveMap = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    const loadAny = (k) => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } };
+
+    const saveAny = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    let favs = loadMap(LS.favs);
+
+    let durs = loadMap(LS.durs);
+
+    let filterFav = false;
+
+    let items = [];
+
+    let activeId = null;
+
+    let selectedId = null;
+
+    let globalPlayCounts = {};
+
+    let globalDownloadCounts = {};
+
+    let toolsHidden = localStorage.getItem(LS.toolsHidden) === "1";
+
+    const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+    let pendingScrollTop = null;
 
     function gaEvent(name, params = {}) {
 
@@ -2718,291 +3272,105 @@
 
     }
 
-    let globalPlayCounts = {};
+    function escHtml(s){
 
-    let globalDownloadCounts = {};
+      return (s ?? "").toString()
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#39;");
+
+    }
+
+    function foldTR(s){
+
+      s = (s || "").toString();
+
+      s = s.toLocaleLowerCase("tr");
+
+      s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      s = s.replace(/ı/g, "i");
+
+      s = s.replace(/\s+/g, " ").trim();
+
+      return s;
+
+    }
+
+    function guessMime(url){
+
+      try{
+
+        const p = new URL(url).pathname.toLowerCase();
+
+        if (p.endsWith(".mp3")) return "audio/mpeg";
+
+        if (p.endsWith(".m4a")) return "audio/mp4";
+
+      }catch{}
+
+      return "audio/*";
+
+    }
+
+    function fmtDur(sec){
+
+      if (!Number.isFinite(sec) || sec <= 0) return "—";
+
+      sec = Math.round(sec);
+
+      const h = Math.floor(sec / 3600);
+
+      const m = Math.floor((sec % 3600) / 60);
+
+      const s = sec % 60;
+
+      const mm = String(m).padStart(2, "0");
+
+      const ss = String(s).padStart(2, "0");
+
+      return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`;
+
+    }
+
+    function fmtMsHuman(ms){
+
+      const totalSec = Math.max(0, Math.round((Number(ms) || 0) / 1000));
+
+      const h = Math.floor(totalSec / 3600);
+
+      const m = Math.floor((totalSec % 3600) / 60);
+
+      const s = totalSec % 60;
+
+      if (h > 0) return `${h} sa ${String(m).padStart(2, "0")} dk ${String(s).padStart(2, "0")} sn`;
+
+      if (m > 0) return `${m} dk ${String(s).padStart(2, "0")} sn`;
+
+      return `${s} sn`;
+
+    }
+
+    function decodeURIComponentSafe(s){
+
+      try { return decodeURIComponent(s); } catch { return s; }
+
+    }
 
     function chunk(arr, size){
 
       const out = [];
 
-      for (let i=0; i<arr.length; i+=size) out.push(arr.slice(i, i+size));
+      for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
 
       return out;
-
-    }
-
-    async function fetchCounts(type, ids){
-
-      if (!ids.length) return {};
-
-      try{
-
-        const res = await fetch(COUNTER_API + "/counts", {
-
-          method: "POST",
-
-          mode: "cors",
-
-          cache: "no-store",
-
-          headers: {
-
-            "content-type": IS_SAFARI ? "text/plain;charset=utf-8" : "application/json"
-
-          },
-
-          body: JSON.stringify({ type, ids })
-
-        });
-
-        if (!res.ok) throw new Error("counts failed");
-
-        const j = await res.json();
-
-        return (j && j.counts) ? j.counts : {};
-
-      }catch{
-
-        return {};
-
-      }
-
-    }
-
-    let refreshCountsTimer = null;
-
-    function scheduleRefreshCounts(ms = 800){
-
-      clearTimeout(refreshCountsTimer);
-
-      refreshCountsTimer = setTimeout(() => refreshAllCounts().catch(()=>{}), ms);
-
-    }
-
-    async function refreshAllCounts(){
-
-      if (!items.length) return;
-
-      const ids = items.map(it => it.id);
-
-      const parts = chunk(ids, 200);
-
-      const playAll = {};
-
-      const dlAll = {};
-
-      for (const part of parts){
-
-        const [p, d] = await Promise.all([
-
-          fetchCounts("play", part),
-
-          fetchCounts("download", part),
-
-        ]);
-
-        Object.assign(playAll, p);
-
-        Object.assign(dlAll, d);
-
-      }
-
-      const playHas = Object.keys(playAll).length > 0;
-
-      const dlHas   = Object.keys(dlAll).length > 0;
-
-      if (!playHas && !dlHas) return;
-
-      if (playHas) globalPlayCounts = playAll;
-
-      if (dlHas)   globalDownloadCounts = dlAll;
-
-      render();
-
-    }
-
-    function sendHit(type, it){
-
-      try{
-
-        const payload = {
-
-          type,
-
-          id: it?.id || "",
-
-          title: it?.title || "",
-
-          file_name: (it?.name || "").split("/").pop() || ""
-
-        };
-
-        const url = COUNTER_API + "/hit";
-
-        const data = JSON.stringify(payload);
-
-        if (IS_SAFARI && navigator.sendBeacon){
-
-          const ok = navigator.sendBeacon(
-
-            url,
-
-            new Blob([data], { type: "text/plain;charset=utf-8" })
-
-          );
-
-          if (ok) return;
-
-        }
-
-        fetch(url, {
-
-          method: "POST",
-
-          mode: "cors",
-
-          cache: "no-store",
-
-          keepalive: true,
-
-          headers: {
-
-            "content-type": IS_SAFARI ? "text/plain;charset=utf-8" : "application/json"
-
-          },
-
-          body: data
-
-        }).catch(() => {});
-
-      }catch{}
-
-    }
-
-    function bumpLocalGlobalCount(type, id){
-
-      if (!id) return;
-
-      if (type === "play"){
-
-        globalPlayCounts[id] = (Number(globalPlayCounts[id]) || 0) + 1;
-
-      } else {
-
-        globalDownloadCounts[id] = (Number(globalDownloadCounts[id]) || 0) + 1;
-
-      }
-
-    }
-
-    let playGate = { id: null, armed: false, sent: false };
-
-    function armPlayGate(it){
-
-      playGate = { id: it?.id || null, armed: true, sent: false };
-
-    }
-
-    function trySendPlayOnPlaying(){
-
-      if (!playGate.armed || playGate.sent || !playGate.id) return;
-
-      if (!playerEl || playerEl.paused) return;
-
-      playGate.sent = true;
-
-      const it = items.find(x => x.id === playGate.id) || { id: playGate.id, title:"", name:"" };
-
-      bumpLocalGlobalCount("play", it.id);
-
-      sendHit("play", it);
-
-      scheduleRefreshCounts(1200);
-
-      render();
-
-    }
-
-    playerEl.addEventListener("playing", trySendPlayOnPlaying);
-
-    playerEl.addEventListener("error", () => {
-
-      const code = playerEl?.error?.code;
-
-      statusEl.textContent = "Audio hata: " + (code || "bilinmiyor");
-
-    });
-
-    const LS = {
-
-      favs:  "fsp1.favs.v1",
-
-      pos:   "fsp1.fp.pos.v1",
-
-      durs:  "fsp1.durs.v1",
-
-      sortMode: "fsp1.sort.mode.v2",
-
-      sortDirDur: "fsp1.sort.dur.dir.v1",
-
-      sortDirDate: "fsp1.sort.date.dir.v1",
-
-      sortDirPlay: "fsp1.sort.play.dir.v1",
-
-      sortDirDl:   "fsp1.sort.dl.dir.v1",
-
-      speed: "fsp1.speed.v1",
-
-      zoom:  "fsp1.ui.zoom.v1",
-
-      captionsMode: "fsp1.captions.mode.v1",
-
-      mobileFiltersOpen: "fsp1.mobile.filters.open.v1",
-
-      itemsCache:   "fsp1.items.cache.s1.v2",
-
-      itemsCacheAt: "fsp1.items.cache.s1.at.v1",
-
-      metaUpdated:  "fsp1.items.meta.updated.s1.v1",
-
-      uiState:      "fsp1.ui.state.v1",
-
-      txSize: "fsp1.tx.size.v1",
-
-      txPos:  "fsp1.tx.pos.v1"
-
-    };
-
-    const loadMap = (k) => { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch { return {}; } };
-
-    const saveMap = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-    const loadAny = (k) => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } };
-
-    const saveAny = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-    let favs  = loadMap(LS.favs);
-
-    let durs  = loadMap(LS.durs);
-
-    let filterFav  = false;
-
-    let items = [];
-
-    let activeId = null;
-
-    let selectedId = null;
-
-    const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-
-    let pendingScrollTop = null;
-
-    function itemsFingerprint(list){
-
-      if (!Array.isArray(list) || !list.length) return "";
-
-      return list.map(x => String(x?.id || "")).sort().join("|");
 
     }
 
@@ -3012,13 +3380,13 @@
 
         saveAny(LS.uiState, {
 
-          q: (searchEl.value || ""),
+          q: searchEl.value || "",
 
           filterFav: !!filterFav,
 
-          activeId: (activeId || null),
+          activeId: activeId || null,
 
-          selectedId: (selectedId || null),
+          selectedId: selectedId || null,
 
           scrollTop: Number(scrollArea.scrollTop) || 0
 
@@ -3068,27 +3436,189 @@
 
     });
 
-    const ALLOWED_SORT = new Set(["title","date","dur","play","download"]);
+    async function fetchCounts(type, ids){
+
+      if (!ids.length) return {};
+
+      try{
+
+        const res = await fetch(COUNTER_API + "/counts", {
+
+          method: "POST",
+
+          mode: "cors",
+
+          cache: "no-store",
+
+          headers: { "content-type": IS_SAFARI ? "text/plain;charset=utf-8" : "application/json" },
+
+          body: JSON.stringify({ type, ids })
+
+        });
+
+        if (!res.ok) throw new Error("counts failed");
+
+        const j = await res.json();
+
+        return (j && j.counts) ? j.counts : {};
+
+      }catch{
+
+        return {};
+
+      }
+
+    }
+
+    let refreshCountsTimer = null;
+
+    function scheduleRefreshCounts(ms = 800){
+
+      clearTimeout(refreshCountsTimer);
+
+      refreshCountsTimer = setTimeout(() => refreshAllCounts().catch(()=>{}), ms);
+
+    }
+
+    async function refreshAllCounts(){
+
+      if (!items.length) return;
+
+      const ids = items.map(it => it.id);
+
+      const parts = chunk(ids, 200);
+
+      const playAll = {};
+
+      const dlAll = {};
+
+      for (const part of parts){
+
+        const [p, d] = await Promise.all([fetchCounts("play", part), fetchCounts("download", part)]);
+
+        Object.assign(playAll, p);
+
+        Object.assign(dlAll, d);
+
+      }
+
+      if (Object.keys(playAll).length) globalPlayCounts = playAll;
+
+      if (Object.keys(dlAll).length) globalDownloadCounts = dlAll;
+
+      render();
+
+    }
+
+    function sendHit(type, it){
+
+      try{
+
+        const payload = {
+
+          type,
+
+          id: it?.id || "",
+
+          title: it?.title || "",
+
+          file_name: (it?.name || "").split("/").pop() || ""
+
+        };
+
+        const url = COUNTER_API + "/hit";
+
+        const data = JSON.stringify(payload);
+
+        if (IS_SAFARI && navigator.sendBeacon){
+
+          const ok = navigator.sendBeacon(url, new Blob([data], { type: "text/plain;charset=utf-8" }));
+
+          if (ok) return;
+
+        }
+
+        fetch(url, {
+
+          method: "POST",
+
+          mode: "cors",
+
+          cache: "no-store",
+
+          keepalive: true,
+
+          headers: { "content-type": IS_SAFARI ? "text/plain;charset=utf-8" : "application/json" },
+
+          body: data
+
+        }).catch(() => {});
+
+      }catch{}
+
+    }
+
+    function bumpLocalGlobalCount(type, id){
+
+      if (!id) return;
+
+      if (type === "play") globalPlayCounts[id] = (Number(globalPlayCounts[id]) || 0) + 1;
+
+      else globalDownloadCounts[id] = (Number(globalDownloadCounts[id]) || 0) + 1;
+
+    }
+
+    let playGate = { id: null, armed: false, sent: false };
+
+    function armPlayGate(it){
+
+      playGate = { id: it?.id || null, armed: true, sent: false };
+
+    }
+
+    function trySendPlayOnPlaying(){
+
+      if (!playGate.armed || playGate.sent || !playGate.id) return;
+
+      if (!playerEl || playerEl.paused) return;
+
+      playGate.sent = true;
+
+      const it = items.find(x => x.id === playGate.id) || { id: playGate.id, title: "", name: "" };
+
+      bumpLocalGlobalCount("play", it.id);
+
+      sendHit("play", it);
+
+      scheduleRefreshCounts(1200);
+
+      render();
+
+    }
+
+    playerEl.addEventListener("playing", trySendPlayOnPlaying);
+
+    playerEl.addEventListener("error", () => {
+
+      const code = playerEl?.error?.code;
+
+      statusEl.textContent = "Audio hata: " + (code || "bilinmiyor");
+
+    });
+
+    const ALLOWED_SORT = new Set(["title", "date", "dur", "play", "download"]);
 
     let sortMode = localStorage.getItem(LS.sortMode) || "date";
 
     if (!ALLOWED_SORT.has(sortMode)) sortMode = "date";
 
-    let durSortDir  = (localStorage.getItem(LS.sortDirDur) === "desc") ? "desc" : "asc";
+    let durSortDir = (localStorage.getItem(LS.sortDirDur) === "desc") ? "desc" : "asc";
 
     let dateSortDir = (localStorage.getItem(LS.sortDirDate) === "asc") ? "asc" : "desc";
 
     let playSortDir = (localStorage.getItem(LS.sortDirPlay) === "asc") ? "asc" : "desc";
 
-    let dlSortDir   = (localStorage.getItem(LS.sortDirDl) === "asc") ? "asc" : "desc";
-
-    if (!localStorage.getItem(LS.sortMode)) localStorage.setItem(LS.sortMode, sortMode);
-
-    if (!localStorage.getItem(LS.sortDirDate)) localStorage.setItem(LS.sortDirDate, dateSortDir);
-
-    if (!localStorage.getItem(LS.sortDirPlay)) localStorage.setItem(LS.sortDirPlay, playSortDir);
-
-    if (!localStorage.getItem(LS.sortDirDl)) localStorage.setItem(LS.sortDirDl, dlSortDir);
+    let dlSortDir = (localStorage.getItem(LS.sortDirDl) === "asc") ? "asc" : "desc";
 
     const SPEEDS = [0.5, 0.75, 0.9, 1, 1.25, 1.5, 1.75, 2.0, 2.25];
 
@@ -3098,7 +3628,7 @@
 
       const s = (Math.round(v * 100) / 100).toString();
 
-      return s.replace(/\.0+$/,"") + "×";
+      return s.replace(/\.0+$/, "") + "×";
 
     }
 
@@ -3188,7 +3718,7 @@
 
       const required = Math.ceil(IOS_MIN_INPUT_PX / scale);
 
-      const inputs = [document.getElementById("search"), document.getElementById("txSearchInput")].filter(Boolean);
+      const inputs = [searchEl, txSearchInput].filter(Boolean);
 
       for (const el of inputs){
 
@@ -3212,7 +3742,7 @@
 
       const vv = window.visualViewport;
 
-      const vw = (vv && vv.width)  ? vv.width  : window.innerWidth;
+      const vw = (vv && vv.width) ? vv.width : window.innerWidth;
 
       const vh = (vv && vv.height) ? vv.height : window.innerHeight;
 
@@ -3240,6 +3770,12 @@
 
         txPanel.style.transformOrigin = "top right";
 
+        pdfOverlay.style.transform = "";
+
+        pdfOverlay.style.width = "100vw";
+
+        pdfOverlay.style.height = "100vh";
+
         return;
 
       }
@@ -3262,6 +3798,14 @@
 
       txPanel.style.transform = `scale(${uiScale})`;
 
+      pdfOverlay.style.transformOrigin = "top left";
+
+      pdfOverlay.style.transform = `scale(${uiScale})`;
+
+      pdfOverlay.style.width = vwL + "px";
+
+      pdfOverlay.style.height = vhL + "px";
+
     }
 
     function setZoomUI(v){
@@ -3270,7 +3814,7 @@
 
       zoomOutBtn.disabled = (zoomIndex <= 0);
 
-      zoomInBtn.disabled  = (zoomIndex >= ZOOMS.length - 1);
+      zoomInBtn.disabled = (zoomIndex >= ZOOMS.length - 1);
 
       zoomOutBtn.classList.toggle("enabled", !zoomOutBtn.disabled);
 
@@ -3278,7 +3822,7 @@
 
       zoomOutBtn.title = `Küçült (${pct})`;
 
-      zoomInBtn.title  = `Büyüt (${pct})`;
+      zoomInBtn.title = `Büyüt (${pct})`;
 
       zoomOutBtn.setAttribute("aria-label", `Küçült (${pct})`);
 
@@ -3320,21 +3864,7 @@
 
       setZoomUI(v);
 
-      setTimeout(() => {
-
-        clampPlayerToViewport();
-
-        updateSticky(true);
-
-      }, 0);
-
-      updateOverlayScale();
-
-      updateSearchNoZoomFontSizes();
-
-      clampTxSizeToViewport();
-
-      clampTxPosToViewport();
+      setTimeout(runViewportRefresh, 0);
 
     }
 
@@ -3404,27 +3934,11 @@
 
     searchEl.addEventListener("focus", () => { setTypingMode(true); setMomentumScroll(scrollArea, true); });
 
-    searchEl.addEventListener("blur",  () => { setTypingMode(false); setMomentumScroll(scrollArea, false); });
+    searchEl.addEventListener("blur", () => { setTypingMode(false); setMomentumScroll(scrollArea, false); });
 
     txSearchInput.addEventListener("focus", () => setMomentumScroll(txBodyEl, true));
 
-    txSearchInput.addEventListener("blur",  () => setMomentumScroll(txBodyEl, false));
-
-    function escHtml(s){
-
-      return (s ?? "").toString()
-
-        .replace(/&/g,"&amp;")
-
-        .replace(/</g,"&lt;")
-
-        .replace(/>/g,"&gt;")
-
-        .replace(/"/g,"&quot;")
-
-        .replace(/'/g,"&#39;");
-
-    }
+    txSearchInput.addEventListener("blur", () => setMomentumScroll(txBodyEl, false));
 
     function highlightDisease(title){
 
@@ -3448,66 +3962,6 @@
 
     }
 
-    function foldTR(s){
-
-      s = (s || "").toString();
-
-      s = s.toLocaleLowerCase("tr");
-
-      s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-      s = s.replace(/ı/g, "i");
-
-      s = s.replace(/\s+/g, " ").trim();
-
-      return s;
-
-    }
-
-    function guessMime(url){
-
-      try{
-
-        const p = new URL(url).pathname.toLowerCase();
-
-        if (p.endsWith(".mp3")) return "audio/mpeg";
-
-        if (p.endsWith(".m4a")) return "audio/mp4";
-
-      }catch{}
-
-      return "audio/*";
-
-    }
-
-    function fmtDur(sec){
-
-      if (!Number.isFinite(sec) || sec <= 0) return "—";
-
-      sec = Math.round(sec);
-
-      const h = Math.floor(sec / 3600);
-
-      const m = Math.floor((sec % 3600) / 60);
-
-      const s = sec % 60;
-
-      const mm = String(m).padStart(2, "0");
-
-      const ss = String(s).padStart(2, "0");
-
-      if (h > 0) return `${h}:${mm}:${ss}`;
-
-      return `${m}:${ss}`;
-
-    }
-
-    function decodeURIComponentSafe(s){
-
-      try { return decodeURIComponent(s); } catch { return s; }
-
-    }
-
     const CAPTION_MODES = ["cc", "CC", "CCx"];
 
     function readCaptionMode(){
@@ -3515,12 +3969,6 @@
       const raw = localStorage.getItem(LS.captionsMode) || "";
 
       if (CAPTION_MODES.includes(raw)) return raw;
-
-      const oldOn = (localStorage.getItem("fsp1.captions.on.v1") !== "0");
-
-      const oldExp = (localStorage.getItem("fsp1.captions.expanded.v1") === "1");
-
-      if (oldOn) return oldExp ? "CC" : "cc";
 
       return "cc";
 
@@ -3574,29 +4022,25 @@
 
       setBtn(ccSmallBtn, captionMode === "cc");
 
-      setBtn(ccMedBtn,   captionMode === "CC");
+      setBtn(ccMedBtn, captionMode === "CC");
 
-      setBtn(ccXBtn,     captionMode === "CCx");
+      setBtn(ccXBtn, captionMode === "CCx");
 
-      if (captionsEl){
+      captionsEl.classList.toggle("hidden", !on);
 
-        captionsEl.classList.toggle("hidden", !on);
+      captionsEl.style.setProperty("--capLines", String(getCaptionMaxLines()));
 
-        captionsEl.style.setProperty("--capLines", String(getCaptionMaxLines()));
+      if (!on){
 
-        if (!on){
+        captionsEl.innerHTML = "";
 
-          captionsEl.innerHTML = "";
+        captionsEl.classList.add("isEmpty");
 
-          captionsEl.classList.add("isEmpty");
+      } else if (!captionsEl.innerHTML){
 
-        } else if (!captionsEl.innerHTML){
+        captionsEl.textContent = "…";
 
-          captionsEl.textContent = "…";
-
-          captionsEl.classList.add("isEmpty");
-
-        }
+        captionsEl.classList.add("isEmpty");
 
       }
 
@@ -3622,7 +4066,7 @@
 
       const frac = Number(m[4] || "0");
 
-      if (![hh,mm,ss,frac].every(Number.isFinite)) return null;
+      if (![hh, mm, ss, frac].every(Number.isFinite)) return null;
 
       return hh * 3600 + mm * 60 + ss + frac;
 
@@ -3668,7 +4112,7 @@
 
       }
 
-      cues.sort((a,b) => a.start - b.start);
+      cues.sort((a, b) => a.start - b.start);
 
       return cues;
 
@@ -3695,22 +4139,6 @@
       }
 
       return -1;
-
-    }
-
-    function escapeHtml(s){
-
-      return (s ?? "").toString()
-
-        .replace(/&/g,"&amp;")
-
-        .replace(/</g,"&lt;")
-
-        .replace(/>/g,"&gt;")
-
-        .replace(/"/g,"&quot;")
-
-        .replace(/'/g,"&#39;");
 
     }
 
@@ -3778,29 +4206,25 @@
 
       }
 
-      {
+      const c = cues[idx];
 
-        const c = cues[idx];
+      parts.push({ role: "active", isActive: true, text: c?.text || "", start: c.start, end: c.end });
 
-        parts.push({ role: "active", isActive: true, text: c?.text || "", start: c.start, end: c.end });
-
-      }
-
-      let total = parts.reduce((a,p) => a + countLinesText(p.text), 0);
+      let total = parts.reduce((a, p) => a + countLinesText(p.text), 0);
 
       let nidx = idx + 1;
 
       while (total < target && nidx < cues.length){
 
-        const c = cues[nidx];
+        const cc = cues[nidx];
 
-        const t = c?.text || "";
+        const t = cc?.text || "";
 
         const n = countLinesText(t);
 
         if (n > 0){
 
-          parts.push({ role: "context", isActive: false, text: t, start: c.start, end: c.end });
+          parts.push({ role: "context", isActive: false, text: t, start: cc.start, end: cc.end });
 
           total += n;
 
@@ -3822,11 +4246,11 @@
 
     function armSegmentEnd(end, resumeAfter, resumeTime){
 
-      segEndTime = (Number.isFinite(end) ? end : null);
+      segEndTime = Number.isFinite(end) ? end : null;
 
       segResumeAfter = !!resumeAfter;
 
-      segResumeTime = (Number.isFinite(resumeTime) ? resumeTime : null);
+      segResumeTime = Number.isFinite(resumeTime) ? resumeTime : null;
 
     }
 
@@ -3866,7 +4290,7 @@
 
           const p = plyr.play();
 
-          if (p && typeof p.catch === "function") p.catch(()=>{});
+          if (p && typeof p.catch === "function") p.catch(() => {});
 
           return;
 
@@ -3896,7 +4320,7 @@
 
         const p = plyr.play();
 
-        if (p && typeof p.catch === "function") p.catch(()=>{});
+        if (p && typeof p.catch === "function") p.catch(() => {});
 
       }catch{}
 
@@ -3940,9 +4364,13 @@
 
     function renderCaptionLines(lines){
 
-      if (!captionsEl) return;
+      if (!isCaptionsOn()) {
 
-      if (!isCaptionsOn()) { captionsEl.innerHTML = ""; return; }
+        captionsEl.innerHTML = "";
+
+        return;
+
+      }
 
       const maxLines = getCaptionMaxLines();
 
@@ -3978,7 +4406,7 @@
 
         const de = Number.isFinite(ln.end) ? ` data-end="${ln.end}"` : "";
 
-        out.push(`<span class="capLine" style="opacity:${opacity.toFixed(2)};font-weight:${weight}"${ds}${de}>${escapeHtml(ln.text)}</span>`);
+        out.push(`<span class="capLine" style="opacity:${opacity.toFixed(2)};font-weight:${weight}"${ds}${de}>${escHtml(ln.text)}</span>`);
 
       }
 
@@ -3994,9 +4422,13 @@
 
     function renderCaptionInfo(text){
 
-      if (!captionsEl) return;
+      if (!isCaptionsOn()) {
 
-      if (!isCaptionsOn()) { captionsEl.innerHTML = ""; return; }
+        captionsEl.innerHTML = "";
+
+        return;
+
+      }
 
       captionsEl.textContent = text || "…";
 
@@ -4012,7 +4444,7 @@
 
       if (!activeCues.length) return;
 
-      const t = Number(playerEl?.currentTime) || 0;
+      const t = Number(playerEl.currentTime) || 0;
 
       const idx = findCueIdx(activeCues, t);
 
@@ -4046,7 +4478,7 @@
 
     }
 
-    if (playerEl) playerEl.addEventListener("timeupdate", onCaptionsTimeupdate);
+    playerEl.addEventListener("timeupdate", onCaptionsTimeupdate);
 
     captionsEl.addEventListener("click", (e) => {
 
@@ -4062,11 +4494,7 @@
 
       const en = Number(span.getAttribute("data-end"));
 
-      if (Number.isFinite(s) && Number.isFinite(en) && en > s){
-
-        playSegment(s, en);
-
-      }
+      if (Number.isFinite(s) && Number.isFinite(en) && en > s) playSegment(s, en);
 
     });
 
@@ -4078,45 +4506,35 @@
 
       const baseDecoded = decoded.replace(/\.(m4a|mp3)$/i, ".srt");
 
-      const baseRaw     = rawName.replace(/\.(m4a|mp3)$/i, ".srt");
+      const baseRaw = rawName.replace(/\.(m4a|mp3)$/i, ".srt");
 
       const hasA = /^A\s+/i.test(baseDecoded);
 
-      const aDecoded = hasA ? baseDecoded : ("A " + baseDecoded);
+      const names = [
 
-      const aRaw     = hasA ? baseRaw     : ("A " + baseRaw);
+        baseDecoded,
 
-      const aUDecoded = hasA ? baseDecoded : ("A_" + baseDecoded);
+        baseRaw,
 
-      const aURaw     = hasA ? baseRaw     : ("A_" + baseRaw);
+        hasA ? baseDecoded : ("A " + baseDecoded),
 
-      const aDDecoded = hasA ? baseDecoded : ("A-" + baseDecoded);
+        hasA ? baseRaw : ("A " + baseRaw),
 
-      const aDRaw     = hasA ? baseRaw     : ("A-" + baseRaw);
+        hasA ? baseDecoded : ("A_" + baseDecoded),
 
-      const altDecoded  = decoded + ".srt";
+        hasA ? baseRaw : ("A_" + baseRaw),
 
-      const altRaw      = rawName + ".srt";
+        hasA ? baseDecoded : ("A-" + baseDecoded),
 
-      const seen = new Set();
+        hasA ? baseRaw : ("A-" + baseRaw),
 
-      const out = [];
+        decoded + ".srt",
 
-      for (const n of [baseDecoded, baseRaw, aDecoded, aRaw, aUDecoded, aURaw, aDDecoded, aDRaw, altDecoded, altRaw]){
+        rawName + ".srt"
 
-        const nn = String(n || "").trim();
+      ];
 
-        if (!nn) continue;
-
-        if (seen.has(nn)) continue;
-
-        seen.add(nn);
-
-        out.push(nn);
-
-      }
-
-      return out;
+      return [...new Set(names.map((x) => String(x || "").trim()).filter(Boolean))];
 
     }
 
@@ -4128,55 +4546,65 @@
 
       const baseDecoded = decoded.replace(/\.(m4a|mp3)$/i, ".txt");
 
-      const baseRaw     = rawName.replace(/\.(m4a|mp3)$/i, ".txt");
+      const baseRaw = rawName.replace(/\.(m4a|mp3)$/i, ".txt");
 
       const hasA = /^A\s+/i.test(baseDecoded);
 
-      const aDecoded  = hasA ? baseDecoded : ("A " + baseDecoded);
+      const names = [
 
-      const aRaw      = hasA ? baseRaw     : ("A " + baseRaw);
+        baseDecoded,
 
-      const aUDecoded = hasA ? baseDecoded : ("A_" + baseDecoded);
+        baseRaw,
 
-      const aURaw     = hasA ? baseRaw     : ("A_" + baseRaw);
+        hasA ? baseDecoded : ("A " + baseDecoded),
 
-      const aDDecoded = hasA ? baseDecoded : ("A-" + baseDecoded);
+        hasA ? baseRaw : ("A " + baseRaw),
 
-      const aDRaw     = hasA ? baseRaw     : ("A-" + baseRaw);
+        hasA ? baseDecoded : ("A_" + baseDecoded),
 
-      const altDecoded = decoded + ".txt";
+        hasA ? baseRaw : ("A_" + baseRaw),
 
-      const altRaw     = rawName + ".txt";
+        hasA ? baseDecoded : ("A-" + baseDecoded),
 
-      const seen = new Set();
+        hasA ? baseRaw : ("A-" + baseRaw),
 
-      const out = [];
+        decoded + ".txt",
 
-      for (const n of [baseDecoded, baseRaw, aDecoded, aRaw, aUDecoded, aURaw, aDDecoded, aDRaw, altDecoded, altRaw]){
+        rawName + ".txt"
 
-        const nn = String(n || "").trim();
+      ];
 
-        if (!nn) continue;
-
-        if (seen.has(nn)) continue;
-
-        seen.add(nn);
-
-        out.push(nn);
-
-      }
-
-      return out;
+      return [...new Set(names.map((x) => String(x || "").trim()).filter(Boolean))];
 
     }
+
+    function __ia2EnsureSlashEnd(s){
+
+      s = String(s || "");
+
+      return s.endsWith("/") ? s : (s + "/");
+
+    }
+
+    function __ia2BasesWithSubdir(bases, subdir){
+
+      const sd = String(subdir || "").replace(/^\/+|\/+$/g, "");
+
+      return (bases || []).map((b) => __ia2EnsureSlashEnd(b) + sd + "/");
+
+    }
+
+    const __IA2_SRT_BASES = __ia2BasesWithSubdir(SRT_BASES, IA2_TX_SUBDIR);
+
+    const __IA2_TXT_BASES = __ia2BasesWithSubdir(TXT_BASES, IA2_TX_SUBDIR);
 
     async function buildTxtUrlsForItem(it){
 
       const names = buildTxtNameCandidates(it);
 
-      const bases = __atelierSourceTranscriptBases(it?.src, TXT_BASES);
-
       const urls = [];
+
+      const bases = (it && it.src === IA2_SRC) ? __IA2_TXT_BASES : TXT_BASES;
 
       for (const name of names){
 
@@ -4196,9 +4624,9 @@
 
       const names = buildSrtNameCandidates(it);
 
-      const bases = __atelierSourceTranscriptBases(it?.src, SRT_BASES);
-
       const urls = [];
+
+      const bases = (it && it.src === IA2_SRC) ? __IA2_SRT_BASES : SRT_BASES;
 
       for (const name of names){
 
@@ -4220,7 +4648,7 @@
 
       lastCueIdx = -1;
 
-      if (!isCaptionsOn()) return renderCaptionInfo("");
+      if (!isCaptionsOn()) return;
 
       if (!it) return renderCaptionInfo("Bir kayıt seç...");
 
@@ -4266,7 +4694,13 @@
 
           const parsed = parseSrtToCues(body);
 
-          if (parsed && parsed.length){ cues = parsed; break; }
+          if (parsed && parsed.length){
+
+            cues = parsed;
+
+            break;
+
+          }
 
         }
 
@@ -4316,47 +4750,17 @@
 
       setCaptionUi();
 
-      const it = items.find(x => x.id === activeId);
+      const it = items.find((x) => x.id === activeId);
 
-      if (isCaptionsOn() && it) loadSrtForItem(it).catch(()=>{});
-
-    }
-
-    if (ccSmallBtn){
-
-      ccSmallBtn.addEventListener("click", (e) => {
-
-        e.stopPropagation();
-
-        setModeOrToggle("cc");
-
-      });
+      if (it) loadSrtForItem(it).catch(() => {});
 
     }
 
-    if (ccMedBtn){
+    ccSmallBtn.addEventListener("click", (e) => { e.stopPropagation(); setModeOrToggle("cc"); });
 
-      ccMedBtn.addEventListener("click", (e) => {
+    ccMedBtn.addEventListener("click", (e) => { e.stopPropagation(); setModeOrToggle("CC"); });
 
-        e.stopPropagation();
-
-        setModeOrToggle("CC");
-
-      });
-
-    }
-
-    if (ccXBtn){
-
-      ccXBtn.addEventListener("click", (e) => {
-
-        e.stopPropagation();
-
-        setModeOrToggle("CCx");
-
-      });
-
-    }
+    ccXBtn.addEventListener("click", (e) => { e.stopPropagation(); setModeOrToggle("CCx"); });
 
     function parseEndDate(item){
 
@@ -4398,7 +4802,7 @@
 
     }
 
-    function setArrowIcon(svgEl, isAsc) {
+    function setArrowIcon(svgEl, isAsc){
 
       if (!svgEl) return;
 
@@ -4435,6 +4839,34 @@
       svgEl.appendChild(mkPath(isAsc ? "M12 19V5" : "M12 5v14"));
 
       svgEl.appendChild(mkPath(isAsc ? "M7 10l5-5 5 5" : "M7 14l5 5 5-5"));
+
+    }
+
+    function applyToolsHiddenUi(){
+
+      document.body.classList.toggle("toolsHidden", !!toolsHidden);
+
+      if (sbToolsToggleBtn){
+
+        sbToolsToggleBtn.classList.toggle("on", !!toolsHidden);
+
+        sbToolsToggleBtn.textContent = toolsHidden ? "Tools Göster" : "Tools Gizle";
+
+      }
+
+      setTimeout(() => updateSticky(true), 0);
+
+    }
+
+    function toggleToolsHidden(){
+
+      toolsHidden = !toolsHidden;
+
+      localStorage.setItem(LS.toolsHidden, toolsHidden ? "1" : "0");
+
+      applyToolsHiddenUi();
+
+      render();
 
     }
 
@@ -4476,77 +4908,71 @@
 
     }
 
-    sortDurBtn.addEventListener("click", (e) => {
+    function clickSort(kind){
 
-      e.stopPropagation();
+      if (kind === "date"){
 
-      if (sortMode !== "dur") sortMode = "dur";
+        if (sortMode !== "date") sortMode = "date";
 
-      else durSortDir = (durSortDir === "asc") ? "desc" : "asc";
+        else dateSortDir = (dateSortDir === "asc") ? "desc" : "asc";
 
-      localStorage.setItem(LS.sortMode, sortMode);
+        localStorage.setItem(LS.sortMode, sortMode);
 
-      localStorage.setItem(LS.sortDirDur, durSortDir);
+        localStorage.setItem(LS.sortDirDate, dateSortDir);
 
-      setSortIcons();
+      } else if (kind === "dur"){
 
-      render();
+        if (sortMode !== "dur") sortMode = "dur";
 
-    });
+        else durSortDir = (durSortDir === "asc") ? "desc" : "asc";
 
-    sortDateBtn.addEventListener("click", (e) => {
+        localStorage.setItem(LS.sortMode, sortMode);
 
-      e.stopPropagation();
+        localStorage.setItem(LS.sortDirDur, durSortDir);
 
-      if (sortMode !== "date") sortMode = "date";
+      } else if (kind === "play"){
 
-      else dateSortDir = (dateSortDir === "asc") ? "desc" : "asc";
+        if (sortMode !== "play") sortMode = "play";
 
-      localStorage.setItem(LS.sortMode, sortMode);
+        else playSortDir = (playSortDir === "asc") ? "desc" : "asc";
 
-      localStorage.setItem(LS.sortDirDate, dateSortDir);
+        localStorage.setItem(LS.sortMode, sortMode);
 
-      setSortIcons();
+        localStorage.setItem(LS.sortDirPlay, playSortDir);
 
-      render();
+      } else if (kind === "download"){
 
-    });
+        if (sortMode !== "download") sortMode = "download";
 
-    sortPlayBtn.addEventListener("click", (e) => {
+        else dlSortDir = (dlSortDir === "asc") ? "desc" : "asc";
 
-      e.stopPropagation();
+        localStorage.setItem(LS.sortMode, sortMode);
 
-      if (sortMode !== "play") sortMode = "play";
+        localStorage.setItem(LS.sortDirDl, dlSortDir);
 
-      else playSortDir = (playSortDir === "asc") ? "desc" : "asc";
-
-      localStorage.setItem(LS.sortMode, sortMode);
-
-      localStorage.setItem(LS.sortDirPlay, playSortDir);
+      }
 
       setSortIcons();
 
       render();
 
-    });
+    }
 
-    sortDlCountBtn.addEventListener("click", (e) => {
+    sortDurBtn.addEventListener("click", (e) => { e.stopPropagation(); clickSort("dur"); });
 
-      e.stopPropagation();
+    sortDateBtn.addEventListener("click", (e) => { e.stopPropagation(); clickSort("date"); });
 
-      if (sortMode !== "download") sortMode = "download";
+    sortPlayBtn.addEventListener("click", (e) => { e.stopPropagation(); clickSort("play"); });
 
-      else dlSortDir = (dlSortDir === "asc") ? "desc" : "asc";
+    sortDlCountBtn.addEventListener("click", (e) => { e.stopPropagation(); clickSort("download"); });
 
-      localStorage.setItem(LS.sortMode, sortMode);
+    sbSortDateBtn.addEventListener("click", () => clickSort("date"));
 
-      localStorage.setItem(LS.sortDirDl, dlSortDir);
+    sbSortDurBtn.addEventListener("click", () => clickSort("dur"));
 
-      setSortIcons();
+    sbSortPlayBtn.addEventListener("click", () => clickSort("play"));
 
-      render();
-
-    });
+    sbSortDlBtn.addEventListener("click", () => clickSort("download"));
 
     let stickyStartTop = null;
 
@@ -4556,13 +4982,11 @@
 
     function measureStickyStartTop(){
 
-      if (!stickyBar) return;
-
-      if (stickyDocked) return;
+      if (!stickyBar || stickyDocked) return;
 
       const barRect = stickyBar.getBoundingClientRect();
 
-      const scRect  = scrollArea.getBoundingClientRect();
+      const scRect = scrollArea.getBoundingClientRect();
 
       stickyStartTop = (barRect.top - scRect.top) + scrollArea.scrollTop;
 
@@ -4638,7 +5062,7 @@
 
       const left = rect.left + pad.pl;
 
-      const top  = rect.top + pad.pt;
+      const top = rect.top + pad.pt;
 
       const width = Math.max(260, rect.width - pad.pl - pad.pr);
 
@@ -4650,7 +5074,7 @@
 
         stickyBar.style.left = (left / uiScale) + "px";
 
-        stickyBar.style.top  = (top  / uiScale) + "px";
+        stickyBar.style.top = (top / uiScale) + "px";
 
         stickyBar.style.width = (width / uiScale) + "px";
 
@@ -4660,7 +5084,7 @@
 
         stickyBar.style.left = left + "px";
 
-        stickyBar.style.top  = top + "px";
+        stickyBar.style.top = top + "px";
 
         stickyBar.style.width = width + "px";
 
@@ -4705,112 +5129,6 @@
       if (!shouldDock && stickyDocked) undockStickyBar();
 
       if (stickyDocked) positionDockedStickyBar();
-
-    }
-
-    function isMobileFiltersMode(){
-
-      try{
-
-        return window.matchMedia("(max-width: 680px)").matches;
-
-      }catch{
-
-        return window.innerWidth <= 680;
-
-      }
-
-    }
-
-    function readMobileFiltersOpen(){
-
-      try{
-
-        const raw = localStorage.getItem(LS.mobileFiltersOpen);
-
-        if (raw === "1") return true;
-
-        if (raw === "0") return false;
-
-      }catch{}
-
-      return false;
-
-    }
-
-    function saveMobileFiltersOpen(v){
-
-      try{
-
-        localStorage.setItem(LS.mobileFiltersOpen, v ? "1" : "0");
-
-      }catch{}
-
-    }
-
-    function applyMobileFiltersState(forceOpen){
-
-      if (!stickyBar || !mobileFiltersToggle) return;
-
-      const isMobile = isMobileFiltersMode();
-
-      const open = !!forceOpen;
-
-      if (!isMobile){
-
-        document.body.classList.remove("mobileFiltersCollapsed");
-
-        mobileFiltersToggle.classList.remove("on");
-
-        mobileFiltersToggle.setAttribute("aria-expanded", "true");
-
-        mobileFiltersToggle.setAttribute("aria-label", "Filtreler");
-
-        mobileFiltersToggle.textContent = "Filtreler";
-
-        setTimeout(() => {
-
-          try{ updateSticky(true); }catch{}
-
-        }, 0);
-
-        return;
-
-      }
-
-      document.body.classList.toggle("mobileFiltersCollapsed", !open);
-
-      mobileFiltersToggle.classList.toggle("on", open);
-
-      mobileFiltersToggle.setAttribute("aria-expanded", String(open));
-
-      mobileFiltersToggle.setAttribute("aria-label", open ? "Filtreleri gizle" : "Filtreleri göster");
-
-      mobileFiltersToggle.textContent = open ? "Filtreleri Gizle" : "Filtreler";
-
-      setTimeout(() => {
-
-        try{ updateSticky(true); }catch{}
-
-      }, 0);
-
-    }
-
-    function restoreMobileFiltersState(){
-
-      applyMobileFiltersState(readMobileFiltersOpen());
-
-    }
-
-    function toggleMobileFilters(){
-
-      if (!isMobileFiltersMode()) return;
-
-      const nextOpen = document.body.classList.contains("mobileFiltersCollapsed");
-
-      saveMobileFiltersOpen(nextOpen);
-
-      applyMobileFiltersState(nextOpen);
 
     }
 
@@ -4998,7 +5316,7 @@
 
         clickDownload(url, filename);
 
-        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
 
       }catch{
 
@@ -5010,7 +5328,7 @@
 
     function buildDownloadUrl(identifier, name){
 
-      const parts = (name || "").split("/").map(p => encodeURIComponent(p));
+      const parts = (name || "").split("/").map((p) => encodeURIComponent(p));
 
       return `https://archive.org/download/${identifier}/${parts.join("/")}`;
 
@@ -5018,91 +5336,107 @@
 
     function replaceExtToTxt(name){
 
-      const s = (name || "").toString();
+      return String(name || "").replace(/\.(m4a|mp3)$/i, ".txt");
 
-      return s.replace(/\.(m4a|mp3)$/i, ".txt");
+    }
+
+    function __ia2IsBlockedByPrefix(fileName){
+
+      const blockPrefixes = ["Dusseldorf", "Düsseldorf", "Stuttgart", "Rheutlingen", "Reutlingen", "Sachsen", "Hessen", "Karlsruhe"];
+
+      let base = (fileName || "").toString();
+
+      base = base.split("/").pop() || base;
+
+      base = decodeURIComponentSafe(base);
+
+      base = base.replace(/\.(m4a|mp3)$/i, "").trim();
+
+      base = base.replace(/^A[\s_-]+/i, "").trim();
+
+      const folded = foldTR(base);
+
+      for (const p of blockPrefixes){
+
+        const c = foldTR(p);
+
+        if (folded.startsWith(c)){
+
+          const next = folded.slice(c.length, c.length + 1);
+
+          if (!next || /[\s\-_0-9.:]/.test(next)) return true;
+
+        }
+
+      }
+
+      return false;
+
+    }
+
+    function __ia2MakeItemsFromFiles(files){
+
+      return (files || [])
+
+        .filter((f) => typeof f?.name === "string")
+
+        .filter((f) => {
+
+          const name = String(f.name).toLowerCase();
+
+          if (!name.endsWith(".m4a")) return false;
+
+          if (!("source" in f)) return true;
+
+          return String(f.source || "").toLowerCase() === "original";
+
+        })
+
+        .filter((f) => !__ia2IsBlockedByPrefix(f.name))
+
+        .map((f, idx) => {
+
+          const name = f.name || "";
+
+          const title = (String(f.title || "").trim()) || decodeURIComponentSafe(name.split("/").pop() || name);
+
+          const url = buildDownloadUrl(IA_IDENTIFIER_2, name);
+
+          const localId = name || url || (title + "#" + idx);
+
+          const id = IA2_SRC + "|" + localId;
+
+          const txtCandidates = buildTxtNameCandidates({ name });
+
+          const txtName = txtCandidates.length ? txtCandidates[0] : replaceExtToTxt(name);
+
+          const txtUrl = txtName ? (__IA2_TXT_BASES[0] + encodeURIComponent(txtName)) : "";
+
+          return { id, title, name, url, src: IA2_SRC, txtName, txtUrl };
+
+        });
 
     }
 
     async function loadItems(){
 
-      const cached = loadAny(LS.itemsCache);
-
-      const cachedAt = Number(localStorage.getItem(LS.itemsCacheAt) || "0");
-
-      const cacheFresh =
-
-        !FORCE_REFRESH &&
-
-        Array.isArray(cached) &&
-
-        cached.length > 0 &&
-
-        Number.isFinite(cachedAt) &&
-
-        (Date.now() - cachedAt) < CACHE_TTL_MS;
-
-      if (cacheFresh){
-
-        items = cached;
-
-        statusEl.textContent = "";
-
-        setSortIcons();
-
-        render();
-
-        restoreScrollIfNeeded();
-
-        scheduleRefreshCounts(50);
-
-      } else {
-
-        statusEl.textContent = "Yükleniyor...";
-
-      }
-
       try{
 
-        const metaUrl = `https://archive.org/metadata/${encodeURIComponent(IA_IDENTIFIER_1)}`;
+        const res1 = await fetch(`https://archive.org/metadata/${encodeURIComponent(IA_IDENTIFIER_1)}`, {
 
-        const res = await fetch(metaUrl, { cache: FORCE_REFRESH ? "no-store" : "no-cache" });
+          cache: FORCE_REFRESH ? "no-store" : "no-cache"
 
-        if (!res.ok) throw new Error("IA metadata okunamadı");
+        });
 
-        const j = await res.json();
+        if (!res1.ok) throw new Error("S1 metadata okunamadı");
 
-        const newUpdated = String(
+        const j1 = await res1.json();
 
-          j?.item_lastupdated ||
+        const files1 = Array.isArray(j1.files) ? j1.files : [];
 
-          j?.item_last_update ||
+        const list1 = files1
 
-          j?.updated ||
-
-          j?.metadata?.updateddate ||
-
-          j?.metadata?.publicdate ||
-
-          ""
-
-        );
-
-        const oldUpdated = String(localStorage.getItem(LS.metaUpdated) || "");
-
-        if (cacheFresh && newUpdated && oldUpdated && newUpdated === oldUpdated){
-
-          localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
-
-          return;
-
-        }
-
-        const files = Array.isArray(j.files) ? j.files : [];
-
-        const list = files
-
-          .filter(f => {
+          .filter((f) => {
 
             const name = (f.name || "").toLowerCase();
 
@@ -5110,7 +5444,7 @@
 
             if (!("source" in f)) return true;
 
-            return (String(f.source).toLowerCase() === "original");
+            return String(f.source || "").toLowerCase() === "original";
 
           })
 
@@ -5128,7 +5462,7 @@
 
             const txtCandidates = buildTxtNameCandidates({ name });
 
-            const txtName = (txtCandidates && txtCandidates.length) ? txtCandidates[0] : replaceExtToTxt(name);
+            const txtName = txtCandidates.length ? txtCandidates[0] : replaceExtToTxt(name);
 
             const txtUrl = txtName ? (TXT_BASES[0] + encodeURIComponent(txtName)) : "";
 
@@ -5136,39 +5470,41 @@
 
           });
 
-        const newFp = itemsFingerprint(list);
+        let finalItems = list1;
 
-        const oldFp = itemsFingerprint(items);
+        try{
 
-        const shouldUpdate = !cacheFresh || (newFp && newFp !== oldFp);
+          const res2 = await fetch(`https://archive.org/metadata/${encodeURIComponent(IA_IDENTIFIER_2)}`, {
 
-        if (shouldUpdate){
+            cache: FORCE_REFRESH ? "no-store" : "no-cache"
 
-          items = list;
+          });
 
-          localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
+          if (!res2.ok) throw new Error("S2 metadata okunamadı");
 
-          localStorage.setItem(LS.itemsCache, JSON.stringify(items));
+          const j2 = await res2.json();
 
-          if (newUpdated) localStorage.setItem(LS.metaUpdated, newUpdated);
+          const files2 = Array.isArray(j2.files) ? j2.files : [];
 
-          statusEl.textContent = items.length ? "" : "Kayıt bulunamadı.";
+          finalItems = finalItems.concat(__ia2MakeItemsFromFiles(files2));
 
-          setSortIcons();
+        }catch(err){
 
-          render();
-
-          restoreScrollIfNeeded();
-
-          scheduleRefreshCounts(100);
-
-        } else {
-
-          localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
-
-          if (newUpdated) localStorage.setItem(LS.metaUpdated, newUpdated);
+          console.warn(err);
 
         }
+
+        items = finalItems;
+
+        statusEl.textContent = items.length ? "" : "Kayıt bulunamadı.";
+
+        setSortIcons();
+
+        render();
+
+        restoreScrollIfNeeded();
+
+        scheduleRefreshCounts(100);
 
         updateSticky(true);
 
@@ -5176,7 +5512,7 @@
 
         console.error(err);
 
-        if (!cacheFresh) statusEl.textContent = "Liste yüklenemedi.";
+        statusEl.textContent = "Liste yüklenemedi.";
 
       }
 
@@ -5186,7 +5522,7 @@
 
       const q = foldTR((searchEl.value || "").trim());
 
-      let arr = items.filter(it => {
+      let arr = items.filter((it) => {
 
         if (q && !foldTR(it.title).includes(q)) return false;
 
@@ -5200,7 +5536,7 @@
 
         const dir = (durSortDir === "asc") ? 1 : -1;
 
-        arr.sort((a,b) => {
+        arr.sort((a, b) => {
 
           const ha = (durs[a.id] > 0);
 
@@ -5226,7 +5562,7 @@
 
         const dir = (dateSortDir === "asc") ? 1 : -1;
 
-        arr.sort((a,b) => {
+        arr.sort((a, b) => {
 
           const ta = parseEndDate(a);
 
@@ -5248,7 +5584,7 @@
 
         const dir = (playSortDir === "asc") ? 1 : -1;
 
-        arr.sort((a,b) => {
+        arr.sort((a, b) => {
 
           const ca = Number(globalPlayCounts[a.id]) || 0;
 
@@ -5264,7 +5600,7 @@
 
         const dir = (dlSortDir === "asc") ? 1 : -1;
 
-        arr.sort((a,b) => {
+        arr.sort((a, b) => {
 
           const ca = Number(globalDownloadCounts[a.id]) || 0;
 
@@ -5278,13 +5614,67 @@
 
       } else {
 
-        arr.sort((a,b) => a.title.localeCompare(b.title, "tr"));
+        arr.sort((a, b) => a.title.localeCompare(b.title, "tr"));
 
       }
 
       return arr;
 
     }
+
+    function itemBaseFilename(it){
+
+      return decodeURIComponentSafe((it?.name || "").split("/").pop() || "");
+
+    }
+
+    function pdfUrlForItem(it){
+
+      const base = itemBaseFilename(it);
+
+      if (!base) return "";
+
+      const pdfName = base.replace(/\.(m4a|mp3)$/i, ".pdf");
+
+      return `docs/${encodeURIComponent(pdfName)}`;
+
+    }
+
+    function openPdfForItem(it){
+
+      const url = pdfUrlForItem(it);
+
+      if (!url) return;
+
+      pdfTitleEl.textContent = (it?.title || "PDF");
+
+      pdfFrame.src = url;
+
+      pdfDownloadBtn.onclick = () => clickDownload(url, itemBaseFilename(it).replace(/\.(m4a|mp3)$/i, ".pdf"));
+
+      pdfOverlay.classList.add("open");
+
+      pdfOverlay.setAttribute("aria-hidden", "false");
+
+    }
+
+    function closePdfOverlay(){
+
+      pdfOverlay.classList.remove("open");
+
+      pdfOverlay.setAttribute("aria-hidden", "true");
+
+      pdfFrame.src = "about:blank";
+
+    }
+
+    pdfCloseBtn.addEventListener("click", closePdfOverlay);
+
+    pdfOverlay.addEventListener("click", (e) => {
+
+      if (e.target === pdfOverlay) closePdfOverlay();
+
+    });
 
     function iconButton(kind, on, title){
 
@@ -5324,6 +5714,22 @@
 
           </svg>`;
 
+      } else if (kind === "pdf"){
+
+        btn.innerHTML = `
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+
+            <path d="M14 2v6h6"/>
+
+            <path d="M8 13h8"/>
+
+            <path d="M8 17h6"/>
+
+          </svg>`;
+
       }
 
       return btn;
@@ -5338,9 +5744,11 @@
 
       filterFavBtn.classList.toggle("on", filterFav);
 
-      filterFavBtn.setAttribute("aria-pressed",  String(filterFav));
+      filterFavBtn.setAttribute("aria-pressed", String(filterFav));
 
       setSortIcons();
+
+      applyToolsHiddenUi();
 
       listEl.innerHTML = "";
 
@@ -5378,7 +5786,9 @@
 
         const favBtn = iconButton("star", !!favs[it.id], "Favori");
 
-        const dlBtn  = iconButton("download", false, "İndir");
+        const dlBtn = iconButton("download", false, "İndir");
+
+        const pdfBtn = iconButton("pdf", false, "PDF aç");
 
         const dlCount = document.createElement("div");
 
@@ -5430,7 +5840,19 @@
 
         });
 
-        for (const b of [favBtn, dlBtn]){
+        pdfBtn.addEventListener("click", (e) => {
+
+          e.stopPropagation();
+
+          selectedId = it.id;
+
+          openPdfForItem(it);
+
+          render();
+
+        });
+
+        for (const b of [favBtn, dlBtn, pdfBtn]){
 
           b.addEventListener("pointerup", (e) => e.stopPropagation());
 
@@ -5449,6 +5871,8 @@
         row.appendChild(dlBtn);
 
         row.appendChild(dlCount);
+
+        row.appendChild(pdfBtn);
 
         row.addEventListener("click", (e) => {
 
@@ -5480,7 +5904,7 @@
 
       const visible = getVisibleItems();
 
-      const idx = visible.findIndex(x => x.id === id);
+      const idx = visible.findIndex((x) => x.id === id);
 
       if (idx === -1) return;
 
@@ -5489,6 +5913,8 @@
     }
 
     function setMediaSource(url, mime){
+
+      stopSkipLoop();
 
       while (playerEl.firstChild) playerEl.removeChild(playerEl.firstChild);
 
@@ -5501,6 +5927,14 @@
       playerEl.appendChild(s);
 
       playerEl.load();
+
+    }
+
+    async function ensureMapForItem(it){
+
+      if (!it) return null;
+
+      return await primeSilenceMapForItem(it);
 
     }
 
@@ -5526,7 +5960,9 @@
 
       render();
 
-      if (typeof renderCaptionInfo === "function") renderCaptionInfo("Altyazı yükleniyor…");
+      if (isCaptionsOn()) renderCaptionInfo("Altyazı yükleniyor…");
+
+      resetSkipRuntimeForNewTrack();
 
       const url = it.url;
 
@@ -5542,6 +5978,8 @@
 
         loadSrtForItem(it).catch(() => {});
 
+        ensureMapForItem(it).catch(() => {});
+
         const p = plyr.play();
 
         if (p && typeof p.catch === "function"){
@@ -5556,7 +5994,7 @@
 
         setTimeout(() => {
 
-          if (playerEl && playerEl.paused) {
+          if (playerEl && playerEl.paused){
 
             statusEl.textContent = statusEl.textContent || "Oynatma başlamadı. Player içindeki ▶︎ tuşuna bas.";
 
@@ -5578,7 +6016,7 @@
 
       if (!visible.length) return;
 
-      let idx = visible.findIndex(x => x.id === activeId);
+      let idx = visible.findIndex((x) => x.id === activeId);
 
       if (idx === -1) idx = 0;
 
@@ -5594,7 +6032,7 @@
 
       if (!visible.length) return;
 
-      let idx = visible.findIndex(x => x.id === activeId);
+      let idx = visible.findIndex((x) => x.id === activeId);
 
       if (idx === -1) idx = 0;
 
@@ -5621,6 +6059,16 @@
     document.addEventListener("keydown", (e) => {
 
       if (e.key === "Escape"){
+
+        if (pdfOverlay.classList.contains("open")){
+
+          e.preventDefault();
+
+          closePdfOverlay();
+
+          return;
+
+        }
 
         if (txPanel.classList.contains("open")){
 
@@ -5668,7 +6116,13 @@
 
     });
 
-    filterFavBtn.addEventListener("click", () => { filterFav = !filterFav; render(); });
+    filterFavBtn.addEventListener("click", () => {
+
+      filterFav = !filterFav;
+
+      render();
+
+    });
 
     resetBtn.addEventListener("click", () => {
 
@@ -5696,7 +6150,7 @@
 
     let lastSentTermNorm = "";
 
-    function sendSearchEvent(termRawInput) {
+    function sendSearchEvent(termRawInput){
 
       const termRaw = (termRawInput || "").trim();
 
@@ -5704,9 +6158,9 @@
 
       const visibleCount = getVisibleItems().length;
 
-      if (termRaw.length === 0) {
+      if (termRaw.length === 0){
 
-        if (lastSentTermNorm !== "") {
+        if (lastSentTermNorm !== ""){
 
           lastSentTermNorm = "";
 
@@ -5732,7 +6186,7 @@
 
     }
 
-    function renderAndTrackSearch() {
+    function renderAndTrackSearch(){
 
       render();
 
@@ -5784,11 +6238,11 @@
 
         fp.style.left = x + "px";
 
-        fp.style.top  = y + "px";
+        fp.style.top = y + "px";
 
         fp.style.bottom = "auto";
 
-        fp.style.right  = "auto";
+        fp.style.right = "auto";
 
         clampPlayerToViewport();
 
@@ -5796,7 +6250,7 @@
 
     }
 
-    function savePlayerPos(x,y){
+    function savePlayerPos(x, y){
 
       localStorage.setItem(LS.pos, JSON.stringify({ x, y, ver: 2 }));
 
@@ -5812,7 +6266,7 @@
 
       const left = parseFloat(fp.style.left);
 
-      const top  = parseFloat(fp.style.top);
+      const top = parseFloat(fp.style.top);
 
       if (Number.isFinite(left) && Number.isFinite(top)) return { left, top };
 
@@ -5842,13 +6296,15 @@
 
         : 0;
 
+      const drawerH = (!skipDrawer.hidden) ? skipDrawer.getBoundingClientRect().height : 0;
+
       const minX = -w + keepX;
 
       const maxX = vw - keepX;
 
       const minY = -h + keepY + capH;
 
-      const maxY = vh - keepY;
+      const maxY = vh - keepY - Math.min(drawerH, 160);
 
       return {
 
@@ -5876,7 +6332,7 @@
 
       fp.style.left = nx + "px";
 
-      fp.style.top  = ny + "px";
+      fp.style.top = ny + "px";
 
       fp.style.right = "auto";
 
@@ -5888,9 +6344,7 @@
 
     const DRAG_IGNORE_SELECTOR =
 
-      "button, a, input, textarea, select, option, " +
-
-      ".speedWrap, .speedCtlBtn, .miniBtn, " +
+      "button, a, input, textarea, select, option, .speedWrap, .speedCtlBtn, .miniBtn, " +
 
       ".plyr__controls, .plyr__control, .plyr__progress, .plyr__seek, .plyr__volume, .plyr__time, .plyr__menu";
 
@@ -5902,19 +6356,17 @@
 
     let dragging = false;
 
-    let startClientX = 0, startClientY = 0;
+    let startClientX = 0;
 
-    let startLeft = 0, startTop = 0;
+    let startClientY = 0;
+
+    let startLeft = 0;
+
+    let startTop = 0;
 
     let moved = false;
 
     let suppressClickUntil = 0;
-
-    function getCurrentLeftTopLayout(){
-
-      return getPlayerPosPx();
-
-    }
 
     fpHeader.addEventListener("pointerdown", (e) => {
 
@@ -5932,19 +6384,19 @@
 
       startClientY = e.clientY;
 
-      const cur = getCurrentLeftTopLayout();
+      const cur = getPlayerPosPx();
 
       startLeft = cur.left;
 
-      startTop  = cur.top;
+      startTop = cur.top;
 
       fp.style.left = startLeft + "px";
 
-      fp.style.top  = startTop + "px";
+      fp.style.top = startTop + "px";
 
       fp.style.bottom = "auto";
 
-      fp.style.right  = "auto";
+      fp.style.right = "auto";
 
     });
 
@@ -5952,25 +6404,21 @@
 
       if (!dragging) return;
 
-      const dxClient = e.clientX - startClientX;
+      const dx = e.clientX - startClientX;
 
-      const dyClient = e.clientY - startClientY;
+      const dy = e.clientY - startClientY;
 
-      const dx = dxClient;
-
-      const dy = dyClient;
-
-      if (!moved && (Math.abs(dxClient) + Math.abs(dyClient) > 6)) moved = true;
+      if (!moved && (Math.abs(dx) + Math.abs(dy) > 6)) moved = true;
 
       const { minX, maxX, minY, maxY } = getPlayerBoundsPx();
 
       const nx = Math.min(maxX, Math.max(minX, startLeft + dx));
 
-      const ny = Math.min(maxY, Math.max(minY, startTop  + dy));
+      const ny = Math.min(maxY, Math.max(minY, startTop + dy));
 
       fp.style.left = nx + "px";
 
-      fp.style.top  = ny + "px";
+      fp.style.top = ny + "px";
 
       savePlayerPos(nx, ny);
 
@@ -6014,7 +6462,7 @@
 
     }, true);
 
-    window.addEventListener("resize", () => {
+    function runViewportRefresh(){
 
       clampPlayerToViewport();
 
@@ -6027,50 +6475,14 @@
       clampTxPosToViewport();
 
       updateSticky(true);
-
-      restoreMobileFiltersState();
-
-    });
-
-    window.addEventListener("orientationchange", () => setTimeout(() => {
-
-      clampPlayerToViewport();
-
-      updateOverlayScale();
-
-      updateSearchNoZoomFontSizes();
-
-      clampTxSizeToViewport();
-
-      clampTxPosToViewport();
-
-      updateSticky(true);
-
-      restoreMobileFiltersState();
-
-    }, 150));
-
-    if (window.visualViewport){
-
-      window.visualViewport.addEventListener("resize", () => {
-
-        clampPlayerToViewport();
-
-        updateOverlayScale();
-
-        updateSearchNoZoomFontSizes();
-
-        clampTxSizeToViewport();
-
-        clampTxPosToViewport();
-
-        updateSticky(true);
-
-        restoreMobileFiltersState();
-
-      });
 
     }
+
+    window.addEventListener("resize", runViewportRefresh);
+
+    window.addEventListener("orientationchange", () => setTimeout(runViewportRefresh, 150));
+
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", runViewportRefresh);
 
     (function disablePullToRefresh(){
 
@@ -6090,11 +6502,7 @@
 
         const y = e.touches[0].clientY;
 
-        if (scrollArea.scrollTop <= 0 && y > startY + 4){
-
-          e.preventDefault();
-
-        }
+        if (scrollArea.scrollTop <= 0 && y > startY + 4) e.preventDefault();
 
       }, { passive: false });
 
@@ -6104,7 +6512,7 @@
 
       const here = location.href.replace(/\/$/, "");
 
-      document.querySelectorAll(".navRow .navLink").forEach(a => {
+      document.querySelectorAll(".navRow .navLink").forEach((a) => {
 
         a.classList.remove("on");
 
@@ -6128,6 +6536,8 @@
 
       setSortIcons();
 
+      applyToolsHiddenUi();
+
     }
 
     function closeSidebar(){
@@ -6142,17 +6552,11 @@
 
     sbCloseBtn.addEventListener("click", (e) => { e.stopPropagation(); closeSidebar(); });
 
-    sbOverlay.addEventListener("click", (e) => {
-
-      if (e.target === sbOverlay) closeSidebar();
-
-    });
+    sbOverlay.addEventListener("click", (e) => { if (e.target === sbOverlay) closeSidebar(); });
 
     document.getElementById("sidebar").addEventListener("click", (e) => e.stopPropagation());
 
     sbRefreshBtn.addEventListener("click", async () => {
-
-      const old = localStorage.getItem(LS.itemsCacheAt) || "0";
 
       localStorage.setItem(LS.itemsCacheAt, "0");
 
@@ -6160,13 +6564,9 @@
 
         await loadItems();
 
-      }finally{
+      } finally {
 
-        if (items.length) statusEl.textContent = "";
-
-        else statusEl.textContent = "Kayıt bulunamadı.";
-
-        if (old) localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
+        statusEl.textContent = items.length ? "" : "Kayıt bulunamadı.";
 
       }
 
@@ -6176,63 +6576,21 @@
 
     sbFavBtn.addEventListener("click", () => { filterFav = !filterFav; setSortIcons(); render(); });
 
-    function clickSort(kind){
+    sbClearTxCacheBtn.addEventListener("click", () => {
 
-      if (kind === "date"){
+      txCache.clear();
 
-        if (sortMode !== "date") sortMode = "date";
+      txInfoEl.textContent = "TXT Cache temizlendi.";
 
-        else dateSortDir = (dateSortDir === "asc") ? "desc" : "asc";
+      setTimeout(() => {
 
-        localStorage.setItem(LS.sortMode, sortMode);
+        if (txCurrent) updateTxInfo(txCurrent);
 
-        localStorage.setItem(LS.sortDirDate, dateSortDir);
+      }, 1200);
 
-      } else if (kind === "dur"){
+    });
 
-        if (sortMode !== "dur") sortMode = "dur";
-
-        else durSortDir = (durSortDir === "asc") ? "desc" : "asc";
-
-        localStorage.setItem(LS.sortMode, sortMode);
-
-        localStorage.setItem(LS.sortDirDur, durSortDir);
-
-      } else if (kind === "play"){
-
-        if (sortMode !== "play") sortMode = "play";
-
-        else playSortDir = (playSortDir === "asc") ? "desc" : "asc";
-
-        localStorage.setItem(LS.sortMode, sortMode);
-
-        localStorage.setItem(LS.sortDirPlay, playSortDir);
-
-      } else if (kind === "download"){
-
-        if (sortMode !== "download") sortMode = "download";
-
-        else dlSortDir = (dlSortDir === "asc") ? "desc" : "asc";
-
-        localStorage.setItem(LS.sortMode, sortMode);
-
-        localStorage.setItem(LS.sortDirDl, dlSortDir);
-
-      }
-
-      setSortIcons();
-
-      render();
-
-    }
-
-    sbSortDateBtn.addEventListener("click", () => clickSort("date"));
-
-    sbSortDurBtn.addEventListener("click", () => clickSort("dur"));
-
-    sbSortPlayBtn.addEventListener("click", () => clickSort("play"));
-
-    sbSortDlBtn.addEventListener("click", () => clickSort("download"));
+    sbToolsToggleBtn.addEventListener("click", toggleToolsHidden);
 
     let txOpen = false;
 
@@ -6326,7 +6684,13 @@
 
       const right = parseFloat(txPanel.style.right || cs.right || "0");
 
-      return { top: Number.isFinite(top) ? top : 0, right: Number.isFinite(right) ? right : 0 };
+      return {
+
+        top: Number.isFinite(top) ? top : 0,
+
+        right: Number.isFinite(right) ? right : 0
+
+      };
 
     }
 
@@ -6386,7 +6750,7 @@
 
         top: Math.min(maxTop, Math.max(minTop, top)),
 
-        right: Math.min(maxRight, Math.max(minRight, right)),
+        right: Math.min(maxRight, Math.max(minRight, right))
 
       };
 
@@ -6407,8 +6771,6 @@
     }
 
     function setTxtBtnUi(){
-
-      if (!fpTxtBtn) return;
 
       fpTxtBtn.classList.toggle("on", !!txOpen);
 
@@ -6468,7 +6830,7 @@
 
       let last = 0;
 
-      for (let i=0; i<ranges.length; i++){
+      for (let i = 0; i < ranges.length; i++){
 
         const r = ranges[i];
 
@@ -6540,15 +6902,11 @@
 
       txNextMatchBtn.disabled = txMatches.length < 2;
 
-      txMatchCountEl.textContent = txMatches.length ? `1/${txMatches.length}` : `0/0`;
+      txMatchCountEl.textContent = txMatches.length ? `1/${txMatches.length}` : "0/0";
 
       txContentEl.innerHTML = buildHighlightedHtml(txPlainText, txMatches, txActiveMatch);
 
-      if (txMatches.length){
-
-        setTimeout(() => scrollToActiveMatch(), 0);
-
-      }
+      if (txMatches.length) setTimeout(() => scrollToActiveMatch(), 0);
 
     }
 
@@ -6590,7 +6948,7 @@
 
         scrollToActiveMatch();
 
-      }else{
+      } else {
 
         txContentEl.innerHTML = buildHighlightedHtml(txPlainText, txMatches, txActiveMatch);
 
@@ -6748,9 +7106,7 @@
 
         const uu = String(u || "").trim();
 
-        if (!uu) continue;
-
-        if (seen.has(uu)) continue;
+        if (!uu || seen.has(uu)) continue;
 
         seen.add(uu);
 
@@ -6856,7 +7212,7 @@
 
       }
 
-      const it = items.find(x => x.id === activeId) || items.find(x => x.id === selectedId) || null;
+      const it = items.find((x) => x.id === activeId) || items.find((x) => x.id === selectedId) || null;
 
       if (!it){
 
@@ -6878,7 +7234,7 @@
 
       }
 
-      openTranscriptFor(it).catch(()=>{});
+      openTranscriptFor(it).catch(() => {});
 
     }
 
@@ -6887,20 +7243,6 @@
       e.stopPropagation();
 
       toggleTranscriptFromPlayer();
-
-    });
-
-    sbClearTxCacheBtn.addEventListener("click", () => {
-
-      txCache.clear();
-
-      txInfoEl.textContent = "TXT Cache temizlendi.";
-
-      setTimeout(() => {
-
-        if (txCurrent) updateTxInfo(txCurrent);
-
-      }, 1200);
 
     });
 
@@ -6916,15 +7258,17 @@
 
     let txDragging = false;
 
-    let txDragStartX = 0, txDragStartY = 0;
+    let txDragStartX = 0;
 
-    let txDragStartTop = 0, txDragStartRight = 0;
+    let txDragStartY = 0;
+
+    let txDragStartTop = 0;
+
+    let txDragStartRight = 0;
 
     txHeader.addEventListener("pointerdown", (e) => {
 
-      if (!txOpen) return;
-
-      if (!shouldStartTxDrag(e.target)) return;
+      if (!txOpen || !shouldStartTxDrag(e.target)) return;
 
       txDragging = true;
 
@@ -6972,7 +7316,7 @@
 
       txHeader.style.cursor = "grab";
 
-      try{ txHeader.releasePointerCapture(pointerId); }catch{}
+      try { txHeader.releasePointerCapture(pointerId); } catch {}
 
       clampTxPosToViewport();
 
@@ -6984,9 +7328,13 @@
 
     let txResizing = false;
 
-    let txResizeStartX = 0, txResizeStartY = 0;
+    let txResizeStartX = 0;
 
-    let txResizeStartW = 0, txResizeStartH = 0;
+    let txResizeStartY = 0;
+
+    let txResizeStartW = 0;
+
+    let txResizeStartH = 0;
 
     function saveTxSize(w, h){
 
@@ -7012,11 +7360,13 @@
 
       const minH = Math.min(maxH, TX_MIN_SIZE.h);
 
-      const cw = Math.min(maxW, Math.max(minW, w));
+      return {
 
-      const ch = Math.min(maxH, Math.max(minH, h));
+        w: Math.min(maxW, Math.max(minW, w)),
 
-      return { w: cw, h: ch };
+        h: Math.min(maxH, Math.max(minH, h))
+
+      };
 
     }
 
@@ -7054,11 +7404,7 @@
 
       const dy = useTransformScale ? (dyClient / uiScale) : dyClient;
 
-      const w = txResizeStartW - dx;
-
-      const h = txResizeStartH + dy;
-
-      const cl = clampTxSize(w, h);
+      const cl = clampTxSize(txResizeStartW - dx, txResizeStartH + dy);
 
       txPanel.style.width = cl.w + "px";
 
@@ -7074,7 +7420,7 @@
 
       txResizing = false;
 
-      try{ txResizeHandle.releasePointerCapture(pointerId); }catch{}
+      try { txResizeHandle.releasePointerCapture(pointerId); } catch {}
 
       clampTxSizeToViewport();
 
@@ -7086,99 +7432,143 @@
 
     txResizeHandle.addEventListener("pointercancel", (e) => endTxResize(e.pointerId));
 
-    (function __atelierNamespaceLocalStorage(){
+    const DEFAULT_SKIP_SETTINGS = {
 
-      const PREFIX = "fspatelier1.";
+      enabled: false,
 
-      try{
+      mode: "max",
 
-        for (const k of Object.keys(LS)){
+      fadeMs: 0,
 
-          const v = LS[k];
+      tailKeepMs: 0,
 
-          if (typeof v === "string"){
+      resumeOffsetMs: 420,
 
-            LS[k] = v.replace(/^fsp1\./, PREFIX);
+      minSegmentMs: 15,
 
-          }
+      cooldownMs: 0,
 
-        }
-
-      }catch{}
-
-    })();
-
-    const ATELIER_IA_IDENTIFIER = "FSPneu";
-
-    const ATELIER_SRC = "CITY";
-
-    const ATELIER_TX_SUBDIR = "FSPab26";
-
-    const ATELIER_EXTRA_SOURCES = [
-
-      {
-
-        identifier: "sprunggelenk-distorsion-frau-florin-krone-27-05-25_20250726",
-
-        src: "THURINGEN",
-
-        titlePrefix: "Thüringen"
-
-      }
-
-    ];
-
-    const ATELIER_CITY_PREFIXES = [
-
-      "Dusseldorf", "Düsseldorf",
-
-      "Stuttgart",
-
-      "Rheutlingen", "Reutlingen",
-
-      "Sachsen", "Karlsruhe",
-
-      "Hessen", "Mainz"
-
-    ];
-
-    const ATELIER_TRANSCRIPT_SUBDIR_BY_SRC = {
-
-      CITY: "FSPab26",
-
-      THURINGEN: "Thuringen"
+      maxAutoSeekMs: 240000
 
     };
 
-    function __atelierEnsureSlashEnd(s){
+    let skipSettings = (() => {
 
-      s = String(s || "");
+      try{
 
-      return s.endsWith("/") ? s : (s + "/");
+        return { ...DEFAULT_SKIP_SETTINGS, ...(JSON.parse(localStorage.getItem(LS.skipSettings) || "{}")) };
+
+      }catch{
+
+        return { ...DEFAULT_SKIP_SETTINGS };
+
+      }
+
+    })();
+
+    const STUMMSKIP_BASES = [
+
+      "https://cdn.jsdelivr.net/gh/protokolFSP/stummskip@main/silence-maps",
+
+      "https://raw.githubusercontent.com/protokolFSP/stummskip/main/silence-maps"
+
+    ];
+
+    const STUMMSKIP_INDEX_URLS = STUMMSKIP_BASES.map((b) => `${b}/index.json`);
+
+    const skipState = {
+
+      rafId: 0,
+
+      skipInFlight: false,
+
+      lastSkipAt: 0,
+
+      manualSuppressUntil: 0,
+
+      currentMapItemId: null,
+
+      currentMap: null,
+
+      mapIndex: null,
+
+      indexPromise: null,
+
+      mapPromiseById: new Map(),
+
+      mapCacheById: new Map(),
+
+      status: "",
+
+      estimatedGainMs: 0,
+
+      fileSavedMs: 0,
+
+      sessionSavedMs: 0
+
+    };
+
+    function saveSkipSettings(){
+
+      localStorage.setItem(LS.skipSettings, JSON.stringify(skipSettings));
 
     }
 
-    function __atelierSourceTranscriptBases(src, baseList){
+    function setSkipStatus(text){
 
-      const subdir = ATELIER_TRANSCRIPT_SUBDIR_BY_SRC[src];
+      skipState.status = String(text || "");
 
-      const originals = Array.isArray(baseList) ? [...baseList] : [];
+      if (skipHintEl) skipHintEl.textContent = skipState.status || "Silence map bekleniyor…";
+
+    }
+
+    function updateSkipGainUi(){
+
+      if (skipEstimatedValueEl) skipEstimatedValueEl.textContent = fmtMsHuman(skipState.estimatedGainMs);
+
+      if (skipFileSavedValueEl) skipFileSavedValueEl.textContent = fmtMsHuman(skipState.fileSavedMs);
+
+      if (skipSessionSavedValueEl) skipSessionSavedValueEl.textContent = fmtMsHuman(skipState.sessionSavedMs);
+
+    }
+
+    function sourceFolderForItem(item){
+
+      return item?.src === IA2_SRC ? "S2" : "S1";
+
+    }
+
+    function buildMapCandidateUrls(item, metaPath = ""){
+
+      const folder = sourceFolderForItem(item);
+
+      const rawName = decodeURIComponentSafe((item?.name || "").split("/").pop() || "");
+
+      const jsonName = rawName.replace(/\.(m4a|mp3)$/i, ".json");
 
       const out = [];
 
-      if (subdir){
+      const p = String(metaPath || "").trim();
 
-        for (const base of originals){
+      if (p){
 
-          out.push(__atelierEnsureSlashEnd(base) + subdir + "/");
+        if (/^https?:\/\//i.test(p)){
+
+          out.push(p);
+
+        } else {
+
+          const clean = p.replace(/^\.?\//, "").replace(/^silence-maps\//, "");
+
+          for (const base of STUMMSKIP_BASES) out.push(`${base}/${clean}`);
 
         }
 
       }
 
-      for (const base of originals){
+      for (const base of STUMMSKIP_BASES){
 
-        out.push(base);
+        out.push(`${base}/${folder}/${encodeURIComponent(jsonName)}`);
 
       }
 
@@ -7186,1273 +7576,801 @@
 
     }
 
-    function __atelierAddFspAb26BasesOnce(){
+    function getMapMetaForItem(indexData, item){
 
-      if (window.__atelierAb26BasesAdded) return;
+      if (!indexData || !item) return null;
 
-      window.__atelierAb26BasesAdded = true;
+      if (indexData.items && indexData.items[item.id]) return indexData.items[item.id];
 
-      const citySrtBases = __atelierSourceTranscriptBases("CITY", SRT_BASES);
+      if (indexData.by_id && indexData.by_id[item.id]) return indexData.by_id[item.id];
 
-      const cityTxtBases = __atelierSourceTranscriptBases("CITY", TXT_BASES);
+      if (indexData.by_name && indexData.by_name[item.name]) return indexData.by_name[item.name];
 
-      SRT_BASES.splice(0, SRT_BASES.length, ...citySrtBases);
+      const candidates = [];
 
-      TXT_BASES.splice(0, TXT_BASES.length, ...cityTxtBases);
+      if (Array.isArray(indexData.entries)) candidates.push(...indexData.entries);
+
+      if (Array.isArray(indexData.items)) candidates.push(...indexData.items);
+
+      return candidates.find((x) => {
+
+        if (!x) return false;
+
+        if (x.id && x.id === item.id) return true;
+
+        if (x.name && x.name === item.name) return true;
+
+        if (x.file && x.file === item.name) return true;
+
+        if (x.title && x.title === item.title) return true;
+
+        return false;
+
+      }) || null;
 
     }
 
-    function __atelierIsCityPrefixed(fileName){
+    async function fetchJsonFirstOk(urls){
 
-      let base = (fileName || "").toString();
+      let lastErr = null;
 
-      base = base.split("/").pop() || base;
+      for (const url of urls){
 
-      base = decodeURIComponentSafe(base);
+        try{
 
-      base = base.replace(/\.(m4a|mp3)$/i, "").trim();
+          const res = await fetch(url, { cache: "no-cache" });
 
-      base = base.replace(/^A[\s_-]+/i, "").trim();
+          if (!res.ok) throw new Error(`fetch failed: ${res.status} ${url}`);
 
-      const folded = foldTR(base);
+          const json = await res.json();
 
-      for (const p of ATELIER_CITY_PREFIXES){
+          return { json, url };
 
-        const c = foldTR(p);
+        }catch(err){
 
-        if (folded.startsWith(c)){
-
-          const next = folded.slice(c.length, c.length + 1);
-
-          if (!next || /[\s\-_0-9.:]/.test(next)) return true;
+          lastErr = err;
 
         }
 
       }
 
-      return false;
+      throw lastErr || new Error("all map urls failed");
 
     }
 
-    function __atelierMakeItemsFromFiles(files){
+    async function loadSilenceMapIndex(force = false){
 
-      const list = (files || [])
+      if (!force && skipState.mapIndex) return skipState.mapIndex;
 
-        .filter(f => typeof f?.name === "string")
+      if (!force && skipState.indexPromise) return skipState.indexPromise;
 
-        .filter(f => {
+      skipState.indexPromise = (async () => {
 
-          const name = String(f.name).toLowerCase();
+        const { json } = await fetchJsonFirstOk(STUMMSKIP_INDEX_URLS);
 
-          if (!name.endsWith(".m4a")) return false;
+        skipState.mapIndex = json || {};
 
-          if (!("source" in f)) return true;
+        return skipState.mapIndex;
 
-          return String(f.source || "").toLowerCase() === "original";
+      })();
 
-        })
+      try{
 
-        .filter(f => __atelierIsCityPrefixed(f.name))
+        return await skipState.indexPromise;
 
-        .map((f, idx) => {
+      } finally {
 
-          const name = f.name || "";
+        skipState.indexPromise = null;
 
-          const title = (String(f.title || "").trim()) || decodeURIComponentSafe(name.split("/").pop() || name);
-
-          const url = buildDownloadUrl(ATELIER_IA_IDENTIFIER, name);
-
-          const localId = name || url || (title + "#" + idx);
-
-          const id = ATELIER_SRC + "|" + localId;
-
-          const txtCandidates = buildTxtNameCandidates({ name });
-
-          const txtName = (txtCandidates && txtCandidates.length) ? txtCandidates[0] : replaceExtToTxt(name);
-
-          const txtBases = __atelierSourceTranscriptBases(ATELIER_SRC, TXT_BASES);
-
-          const txtUrl = txtName ? (txtBases[0] + encodeURIComponent(txtName)) : "";
-
-          return { id, title, name, url, src: ATELIER_SRC, txtName, txtUrl };
-
-        });
-
-      return list;
+      }
 
     }
 
-    function __atelierMakeExtraItemsFromFiles(files, source){
+    async function loadSilenceMapForItem(item, force = false){
 
-      return (files || [])
+      if (!item?.id) return null;
 
-        .filter(f => typeof f?.name === "string")
+      if (!force && skipState.mapCacheById.has(item.id)) return skipState.mapCacheById.get(item.id) || null;
 
-        .filter(f => {
+      if (!force && skipState.mapPromiseById.has(item.id)) return skipState.mapPromiseById.get(item.id);
 
-          const name = String(f.name).toLowerCase();
+      const p = (async () => {
 
-          if (!(name.endsWith(".mp3") || name.endsWith(".m4a"))) return false;
+        let meta = null;
 
-          if (!("source" in f)) return true;
+        try{
 
-          return String(f.source || "").toLowerCase() === "original";
+          const indexData = await loadSilenceMapIndex(force);
 
-        })
+          meta = getMapMetaForItem(indexData, item);
 
-        .map((f, idx) => {
+        }catch{}
 
-          const name = f.name || "";
+        const candidateUrls = buildMapCandidateUrls(item, meta?.path || meta?.url || meta?.file || "");
 
-          const rawTitle =
+        const { json: j, url } = await fetchJsonFirstOk(candidateUrls);
 
-            String(f.title || "").trim() ||
+        const segments = Array.isArray(j?.segments) ? j.segments : [];
 
-            decodeURIComponentSafe(name.split("/").pop() || name).replace(/\.(mp3|m4a)$/i, "");
+        const normalized = {
 
-          const title = `${source.titlePrefix} ${rawTitle}`;
+          ...j,
 
-          const url = buildDownloadUrl(source.identifier, name);
+          id: j?.id || item.id,
 
-          const localId = name || url || (title + "#" + idx);
+          name: j?.name || item.name || "",
 
-          const id = source.src + "|" + localId;
+          duration: Number(j?.duration) || 0,
 
-          const txtCandidates = buildTxtNameCandidates({ name });
+          sourceUrl: url,
 
-          const txtName = txtCandidates?.length ? txtCandidates[0] : replaceExtToTxt(name);
+          segments: segments
 
-          const txtBases = __atelierSourceTranscriptBases(source.src, TXT_BASES);
+            .map((seg) => ({ start: Number(seg?.start), end: Number(seg?.end) }))
 
-          const txtUrl = txtName ? (txtBases[0] + encodeURIComponent(txtName)) : "";
+            .filter((seg) => Number.isFinite(seg.start) && Number.isFinite(seg.end) && seg.end > seg.start)
 
-          return { id, title, name, url, src: source.src, txtName, txtUrl };
+            .sort((a, b) => a.start - b.start)
 
-        });
+        };
+
+        skipState.mapCacheById.set(item.id, normalized);
+
+        return normalized;
+
+      })();
+
+      skipState.mapPromiseById.set(item.id, p);
+
+      try{
+
+        return await p;
+
+      } finally {
+
+        skipState.mapPromiseById.delete(item.id);
+
+      }
 
     }
 
-    const __orig_loadItems = loadItems;
+    function getEligibleSkipMsForSegment(seg){
 
-    loadItems = async function(){
+      if (!seg) return 0;
 
-      __atelierAddFspAb26BasesOnce();
+      const segLenMs = (seg.end - seg.start) * 1000;
 
-      const cached = loadAny(LS.itemsCache);
+      if (!Number.isFinite(segLenMs) || segLenMs < skipSettings.minSegmentMs) return 0;
 
-      const cachedAt = Number(localStorage.getItem(LS.itemsCacheAt) || "0");
+      const resumeOffsetMs = Math.max(0, Number(skipSettings.resumeOffsetMs) || 0);
 
-      const cacheFresh =
+      const tailKeepMs = Math.max(0, Number(skipSettings.tailKeepMs) || 0);
 
-        !FORCE_REFRESH &&
+      return Math.max(0, segLenMs - tailKeepMs + resumeOffsetMs);
 
-        Array.isArray(cached) &&
+    }
 
-        cached.length > 0 &&
+    function recomputeEstimatedGain(){
 
-        Number.isFinite(cachedAt) &&
+      const segs = skipState.currentMap?.segments || [];
 
-        (Date.now() - cachedAt) < CACHE_TTL_MS;
+      let total = 0;
 
-      if (cacheFresh){
+      for (const seg of segs) total += getEligibleSkipMsForSegment(seg);
 
-        items = cached;
+      skipState.estimatedGainMs = total;
 
-        statusEl.textContent = "";
+      updateSkipGainUi();
 
-        setSortIcons();
+    }
 
-        render();
+    async function primeSilenceMapForItem(item){
 
-        restoreScrollIfNeeded();
+      skipState.currentMapItemId = item?.id || null;
 
-        scheduleRefreshCounts(50);
+      skipState.currentMap = null;
 
-      } else {
+      skipState.estimatedGainMs = 0;
 
-        statusEl.textContent = "Yükleniyor...";
+      updateSkipGainUi();
+
+      if (!item){
+
+        setSkipStatus("Silence map yok.");
+
+        syncSkipUi();
+
+        return null;
 
       }
 
       try{
 
-        const metaUrl = `https://archive.org/metadata/${encodeURIComponent(ATELIER_IA_IDENTIFIER)}`;
+        setSkipStatus("Silence map aranıyor…");
 
-        const res = await fetch(metaUrl, { cache: FORCE_REFRESH ? "no-store" : "no-cache" });
+        const map = await loadSilenceMapForItem(item, false);
 
-        if (!res.ok) throw new Error("IA metadata okunamadı: " + res.status);
+        if (!map || !map.segments.length){
 
-        const j = await res.json();
+          skipState.currentMap = null;
 
-        const newUpdated = String(
+          skipState.estimatedGainMs = 0;
 
-          j?.item_lastupdated ||
+          setSkipStatus("Bu kayıtta silence map boş.");
 
-          j?.item_last_update ||
+          syncSkipUi();
 
-          j?.updated ||
+          updateSkipGainUi();
 
-          j?.metadata?.updateddate ||
-
-          j?.metadata?.publicdate ||
-
-          ""
-
-        );
-
-        const oldUpdated = String(localStorage.getItem(LS.metaUpdated) || "");
-
-        if (cacheFresh && newUpdated && oldUpdated && newUpdated === oldUpdated){
-
-          localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
-
-          return;
+          return null;
 
         }
 
-        const files = Array.isArray(j.files) ? j.files : [];
+        if (skipState.currentMapItemId === item.id){
 
-        let list = __atelierMakeItemsFromFiles(files);
+          skipState.currentMap = map;
 
-        for (const source of ATELIER_EXTRA_SOURCES){
+          recomputeEstimatedGain();
 
-          try{
+          setSkipStatus(`Silence map hazır · ${map.segments.length} segment`);
 
-            const extraMetaUrl = `https://archive.org/metadata/${encodeURIComponent(source.identifier)}`;
+          syncSkipUi();
 
-            const extraRes = await fetch(extraMetaUrl, { cache: FORCE_REFRESH ? "no-store" : "no-cache" });
-
-            if (!extraRes.ok) continue;
-
-            const extraJson = await extraRes.json();
-
-            const extraFiles = Array.isArray(extraJson.files) ? extraJson.files : [];
-
-            list = list.concat(__atelierMakeExtraItemsFromFiles(extraFiles, source));
-
-          }catch(err){
-
-            console.warn("Extra source yüklenemedi:", source.identifier, err);
-
-          }
+          if (skipSettings.enabled && !playerEl.paused) startSkipLoop();
 
         }
 
-        const newFp = itemsFingerprint(list);
-
-        const oldFp = itemsFingerprint(items);
-
-        const shouldUpdate = !cacheFresh || (newFp && newFp !== oldFp);
-
-        if (shouldUpdate){
-
-          items = list;
-
-          localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
-
-          localStorage.setItem(LS.itemsCache, JSON.stringify(items));
-
-          if (newUpdated) localStorage.setItem(LS.metaUpdated, newUpdated);
-
-          statusEl.textContent = items.length ? "" : "Kayıt bulunamadı.";
-
-          setSortIcons();
-
-          render();
-
-          restoreScrollIfNeeded();
-
-          scheduleRefreshCounts(100);
-
-        } else {
-
-          localStorage.setItem(LS.itemsCacheAt, String(Date.now()));
-
-          if (newUpdated) localStorage.setItem(LS.metaUpdated, newUpdated);
-
-        }
-
-        updateSticky(true);
+        return map;
 
       }catch(err){
 
-        console.error(err);
+        console.error("Silence map yüklenemedi:", err);
 
-        if (!cacheFresh) statusEl.textContent = "Liste yüklenemedi.";
+        skipState.currentMap = null;
+
+        skipState.estimatedGainMs = 0;
+
+        updateSkipGainUi();
+
+        setSkipStatus(`Silence map yüklenemedi. ${err.message || ""}`.trim());
+
+        syncSkipUi();
+
+        return null;
 
       }
 
-    };
+    }
 
-    (function fspPdfAddonFinal(){
+    function findSilenceSegmentAt(t){
 
-      "use strict";
+      const map = skipState.currentMap;
 
-      const PDF_IA_IDENTIFIER = "FSPpdf";
+      if (!map?.segments?.length) return null;
 
-      const PDF_PROXY_BASE = "https://pdf-proxy.protokolfsp.workers.dev/";
+      let lo = 0;
 
-      const PDF_TTL_MS = 6 * 60 * 60 * 1000;
+      let hi = map.segments.length - 1;
 
-      let pdfNameMap = new Map();
+      while (lo <= hi){
 
-      let pdfLoadedAt = 0;
+        const mid = (lo + hi) >> 1;
 
-      let pdfLoading = false;
+        const seg = map.segments[mid];
 
-      let prevBodyOverflow = "";
+        if (t < seg.start) hi = mid - 1;
 
-      let pdfjsReady = false;
+        else if (t >= seg.end) lo = mid + 1;
 
-      let renderToken = { dead: false };
-
-      let current = { base: "", fileUrl: "", filename: "", title: "" };
-
-      function decodeSafe(s){ try { return decodeURIComponent(s); } catch { return String(s || ""); } }
-
-      function normKey(s){ return String(s || "").normalize("NFC").trim(); }
-
-      function isMobile(){ try { return window.matchMedia && window.matchMedia("(max-width: 680px)").matches; } catch { return false; } }
-
-      function ensureCss(){
-
-        if (document.getElementById("pdf-addon-css")) return;
-
-        const st = document.createElement("style");
-
-        st.id = "pdf-addon-css";
-
-        st.textContent = `
-
-          .headerRow, .itemRow{
-
-            grid-template-columns: minmax(0, 1fr) 8ch 54px 36px 36px 54px 36px !important;
-
-          }
-
-          @media (max-width: 680px){
-
-            .headerRow, .itemRow{
-
-              grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px 34px !important;
-
-            }
-
-          }
-
-          #pdfOverlay{
-
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0,0,0,.28);
-
-            z-index: 10080;
-
-            display:none;
-
-          }
-
-          #pdfOverlay.open{ display:block; }
-
-          #pdfPanel{
-
-            position:absolute;
-
-            inset:0;
-
-            background:#fff;
-
-            display:flex;
-
-            flex-direction:column;
-
-          }
-
-          #pdfPanelHeader{
-
-            flex:0 0 auto;
-
-            padding:10px 12px;
-
-            background:#fbfbfb;
-
-            display:flex;
-
-            align-items:center;
-
-            justify-content:space-between;
-
-            gap:10px;
-
-            border-bottom:1px solid #ececec;
-
-            line-height:1.05;
-
-          }
-
-          #pdfPanelTitle{
-
-            font-weight:750;
-
-            font-size:1rem;
-
-            white-space:nowrap;
-
-            overflow:hidden;
-
-            text-overflow:ellipsis;
-
-            flex:1 1 auto;
-
-            min-width:0;
-
-          }
-
-          #pdfPanelBtns{ display:flex; gap:10px; flex:0 0 auto; }
-
-          .pdfBigBtn{
-
-            height:56px;
-
-            min-width:120px;
-
-            padding:0 18px;
-
-            border-radius:16px;
-
-            border:1px solid #d8d8d8;
-
-            background:#fff;
-
-            font-weight:900;
-
-            font-size:20px;
-
-            cursor:pointer;
-
-            display:inline-flex;
-
-            align-items:center;
-
-            justify-content:center;
-
-            user-select:none;
-
-            -webkit-tap-highlight-color: transparent;
-
-          }
-
-          .pdfBigBtn:hover{ background:#f7f7f7; }
-
-          #pdfBody{
-
-            flex:1 1 auto;
-
-            overflow:auto;
-
-            -webkit-overflow-scrolling: touch;
-
-            background:#f2f2f2;
-
-            padding:10px;
-
-            display:none;
-
-          }
-
-          #pdfCanvasWrap{
-
-            display:grid;
-
-            gap:10px;
-
-            justify-items:center;
-
-          }
-
-          .pdfPage{
-
-            background:#fff;
-
-            border-radius:12px;
-
-            overflow:hidden;
-
-            box-shadow: 0 10px 22px rgba(0,0,0,.10);
-
-          }
-
-          #pdfHint{
-
-            color:#666;
-
-            font-size:14px;
-
-            padding:10px 0 0 0;
-
-            text-align:center;
-
-          }
-
-          #pdfIAEmbed{
-
-            flex:1 1 auto;
-
-            width:100%;
-
-            border:0;
-
-            background:#fff;
-
-            display:none;
-
-          }
-
-          @media (max-width: 680px){
-
-            .pdfBigBtn{ height:60px; min-width:140px; font-size:22px; }
-
-          }
-
-        `;
-
-        document.head.appendChild(st);
+        else return seg;
 
       }
 
-      function ensureHeader(){
+      return null;
 
-        const hdr = document.querySelector(".headerRow");
+    }
 
-        if (!hdr) return;
+    async function fadePlayerVolume(from, to, ms){
 
-        if (hdr.querySelector("[data-pdf-header='1']")) return;
+      const duration = Math.max(0, Number(ms) || 0);
 
-        const cell = document.createElement("div");
+      if (duration <= 0){
 
-        cell.className = "headIconCell";
+        try { playerEl.volume = Math.max(0, Math.min(1, to)); } catch {}
 
-        cell.title = "PDF";
-
-        cell.setAttribute("aria-label","PDF");
-
-        cell.textContent = "📄";
-
-        cell.dataset.pdfHeader = "1";
-
-        hdr.appendChild(cell);
+        return;
 
       }
 
-      function ensureOverlay(){
+      const start = performance.now();
 
-        if (document.getElementById("pdfOverlay")) return;
+      const diff = to - from;
 
-        const ov = document.createElement("div");
+      return new Promise((resolve) => {
 
-        ov.id = "pdfOverlay";
+        function step(now){
 
-        ov.setAttribute("aria-hidden","true");
+          const p = Math.min(1, (now - start) / duration);
 
-        const panel = document.createElement("div");
+          const eased = p < 1 ? (1 - Math.pow(1 - p, 3)) : 1;
 
-        panel.id = "pdfPanel";
+          try { playerEl.volume = Math.max(0, Math.min(1, from + diff * eased)); } catch {}
 
-        panel.addEventListener("click", (e) => e.stopPropagation());
+          if (p < 1) requestAnimationFrame(step);
 
-        const head = document.createElement("div");
-
-        head.id = "pdfPanelHeader";
-
-        const title = document.createElement("div");
-
-        title.id = "pdfPanelTitle";
-
-        title.textContent = "PDF";
-
-        const btns = document.createElement("div");
-
-        btns.id = "pdfPanelBtns";
-
-        const dl = document.createElement("button");
-
-        dl.id = "pdfDlBtn";
-
-        dl.className = "pdfBigBtn";
-
-        dl.type = "button";
-
-        dl.textContent = "İndir";
-
-        const close = document.createElement("button");
-
-        close.id = "pdfCloseBtn";
-
-        close.className = "pdfBigBtn";
-
-        close.type = "button";
-
-        close.textContent = "Kapat";
-
-        const iaEmbed = document.createElement("iframe");
-
-        iaEmbed.id = "pdfIAEmbed";
-
-        iaEmbed.setAttribute("loading","lazy");
-
-        iaEmbed.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups");
-
-        const body = document.createElement("div");
-
-        body.id = "pdfBody";
-
-        const wrap = document.createElement("div");
-
-        wrap.id = "pdfCanvasWrap";
-
-        const hint = document.createElement("div");
-
-        hint.id = "pdfHint";
-
-        body.appendChild(wrap);
-
-        body.appendChild(hint);
-
-        close.addEventListener("click", closePdf);
-
-        ov.addEventListener("click", closePdf);
-
-        dl.addEventListener("click", (e) => {
-
-          e.stopPropagation();
-
-          const u = dl.dataset.dlUrl || "";
-
-          const f = dl.dataset.filename || "document.pdf";
-
-          if (!u) return;
-
-          downloadNoBlank(u, f);
-
-        });
-
-        btns.appendChild(dl);
-
-        btns.appendChild(close);
-
-        head.appendChild(title);
-
-        head.appendChild(btns);
-
-        panel.appendChild(head);
-
-        panel.appendChild(iaEmbed);
-
-        panel.appendChild(body);
-
-        ov.appendChild(panel);
-
-        document.body.appendChild(ov);
-
-        document.addEventListener("keydown", (e) => {
-
-          if (e.key === "Escape" && ov.classList.contains("open")) closePdf();
-
-        });
-
-      }
-
-      function lockBody(){
-
-        try{
-
-          prevBodyOverflow = document.body.style.overflow || "";
-
-          document.body.style.overflow = "hidden";
-
-        }catch{}
-
-      }
-
-      function unlockBody(){
-
-        try{ document.body.style.overflow = prevBodyOverflow; }catch{}
-
-      }
-
-      function setHint(text){
-
-        const hint = document.getElementById("pdfHint");
-
-        if (hint) hint.textContent = text || "";
-
-      }
-
-      function clearDesktopPages(){
-
-        const wrap = document.getElementById("pdfCanvasWrap");
-
-        if (wrap) wrap.innerHTML = "";
-
-        setHint("");
-
-      }
-
-      function showDesktopPdfJs(){
-
-        const body = document.getElementById("pdfBody");
-
-        const ia = document.getElementById("pdfIAEmbed");
-
-        if (body) body.style.display = "block";
-
-        if (ia) ia.style.display = "none";
-
-      }
-
-      function showIaEmbed(){
-
-        const body = document.getElementById("pdfBody");
-
-        const ia = document.getElementById("pdfIAEmbed");
-
-        if (body) body.style.display = "none";
-
-        if (ia) ia.style.display = "block";
-
-      }
-
-      function closePdf(){
-
-        const ov = document.getElementById("pdfOverlay");
-
-        const ia = document.getElementById("pdfIAEmbed");
-
-        if (!ov) return;
-
-        renderToken.dead = true;
-
-        renderToken = { dead: false };
-
-        current = { base: "", fileUrl: "", filename: "", title: "" };
-
-        ov.classList.remove("open");
-
-        ov.setAttribute("aria-hidden","true");
-
-        unlockBody();
-
-        if (ia) ia.src = "about:blank";
-
-        clearDesktopPages();
-
-      }
-
-      function downloadNoBlank(href, filename){
-
-        const a = document.createElement("a");
-
-        a.href = href;
-
-        a.rel = "noopener";
-
-        a.target = "_self";
-
-        if (filename) a.download = filename;
-
-        document.body.appendChild(a);
-
-        a.click();
-
-        a.remove();
-
-      }
-
-      function archiveDownloadUrl(base){
-
-        return `https://archive.org/download/${encodeURIComponent(PDF_IA_IDENTIFIER)}/${encodeURIComponent(base)}`;
-
-      }
-
-      function proxyUrlFor(fileUrl, filename, dl){
-
-        const u = new URL(PDF_PROXY_BASE);
-
-        u.searchParams.set("u", fileUrl);
-
-        u.searchParams.set("dl", dl ? "1" : "0");
-
-        if (filename) u.searchParams.set("f", filename);
-
-        u.searchParams.set("v", String(Date.now()));
-
-        return u.toString();
-
-      }
-
-      function iaEmbedUrl(base){
-
-        return `https://archive.org/embed/${encodeURIComponent(PDF_IA_IDENTIFIER)}?filename=${encodeURIComponent(base)}`;
-
-      }
-
-      async function ensurePdfJs(){
-
-        if (pdfjsReady) return;
-
-        if (window.pdfjsLib && window.pdfjsLib.getDocument) {
-
-          pdfjsReady = true;
-
-          return;
+          else resolve();
 
         }
 
-        await new Promise((resolve, reject) => {
-
-          const s = document.createElement("script");
-
-          s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js";
-
-          s.onload = resolve;
-
-          s.onerror = reject;
-
-          document.head.appendChild(s);
-
-        });
-
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
-
-        pdfjsReady = true;
-
-      }
-
-      async function renderDesktopPdf(fileUrl, filename){
-
-        await ensurePdfJs();
-
-        const wrap = document.getElementById("pdfCanvasWrap");
-
-        const body = document.getElementById("pdfBody");
-
-        if (!wrap || !body) return;
-
-        clearDesktopPages();
-
-        setHint("Yükleniyor…");
-
-        const token = renderToken;
-
-        const viewUrl = proxyUrlFor(fileUrl, filename, false);
-
-        let pdf;
-
-        try{
-
-          pdf = await window.pdfjsLib.getDocument({ url: viewUrl, withCredentials: false }).promise;
-
-        }catch{
-
-          throw new Error("pdfjs_open_failed");
-
-        }
-
-        if (token.dead) return;
-
-        setHint("");
-
-        const bodyW = Math.max(320, wrap.clientWidth || body.clientWidth || window.innerWidth);
-
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
-
-          if (token.dead) return;
-
-          const page = await pdf.getPage(pageNum);
-
-          if (token.dead) return;
-
-          const vp1 = page.getViewport({ scale: 1 });
-
-          const scale = Math.max(0.2, (bodyW - 12) / vp1.width);
-
-          const viewport = page.getViewport({ scale });
-
-          const canvas = document.createElement("canvas");
-
-          const ctx = canvas.getContext("2d", { alpha: false });
-
-          canvas.width = Math.floor(viewport.width);
-
-          canvas.height = Math.floor(viewport.height);
-
-          const holder = document.createElement("div");
-
-          holder.className = "pdfPage";
-
-          holder.appendChild(canvas);
-
-          wrap.appendChild(holder);
-
-          await page.render({ canvasContext: ctx, viewport }).promise;
-
-        }
-
-      }
-
-      async function openPdf(titleText, base){
-
-        ensureCss();
-
-        ensureOverlay();
-
-        const ov = document.getElementById("pdfOverlay");
-
-        const t = document.getElementById("pdfPanelTitle");
-
-        const dlBtn = document.getElementById("pdfDlBtn");
-
-        const ia = document.getElementById("pdfIAEmbed");
-
-        if (!ov || !t || !dlBtn || !ia) return;
-
-        const safeFilename = String(base || "document.pdf").replace(/[\\/:*?"<>|]+/g, "_");
-
-        const fileUrl = archiveDownloadUrl(base);
-
-        const dlUrl = proxyUrlFor(fileUrl, safeFilename, true);
-
-        t.textContent = titleText || "PDF";
-
-        dlBtn.dataset.dlUrl = dlUrl;
-
-        dlBtn.dataset.filename = safeFilename;
-
-        lockBody();
-
-        ov.classList.add("open");
-
-        ov.setAttribute("aria-hidden","false");
-
-        if (isMobile()){
-
-          showIaEmbed();
-
-          ia.src = iaEmbedUrl(base) + "&v=" + Date.now();
-
-          clearDesktopPages();
-
-          return;
-
-        }
-
-        showDesktopPdfJs();
-
-        ia.src = "about:blank";
-
-        renderToken.dead = true;
-
-        renderToken = { dead: false };
-
-        current = { base, fileUrl, filename: safeFilename, title: titleText || "PDF" };
-
-        try{
-
-          await renderDesktopPdf(fileUrl, safeFilename);
-
-        }catch{
-
-          clearDesktopPages();
-
-          setHint("");
-
-          showIaEmbed();
-
-          ia.src = iaEmbedUrl(base) + "&v=" + Date.now();
-
-        }
-
-      }
-
-      function buildPdfKeyForItem(it){
-
-        const raw = (it?.name || "").split("/").pop() || "";
-
-        const decoded = (typeof window.decodeURIComponentSafe === "function")
-
-          ? window.decodeURIComponentSafe(raw)
-
-          : decodeSafe(raw);
-
-        return normKey(decoded.replace(/\.(m4a|mp3)$/i, ".pdf"));
-
-      }
-
-      function getPdfOriginalBasename(it){
-
-        return pdfNameMap.get(buildPdfKeyForItem(it)) || null;
-
-      }
-
-      async function loadPdfIndex(force){
-
-        const now = Date.now();
-
-        if (!force && pdfNameMap.size > 0 && (now - pdfLoadedAt) < PDF_TTL_MS) return;
-
-        if (pdfLoading) return;
-
-        pdfLoading = true;
-
-        try{
-
-          const metaUrl = `https://archive.org/metadata/${encodeURIComponent(PDF_IA_IDENTIFIER)}`;
-
-          const res = await fetch(metaUrl, { cache: force ? "no-store" : "no-cache" });
-
-          if (!res.ok) throw new Error("pdf meta failed");
-
-          const j = await res.json();
-
-          const files = Array.isArray(j.files) ? j.files : [];
-
-          const map = new Map();
-
-          for (const f of files){
-
-            const name = (f && typeof f.name === "string") ? f.name : "";
-
-            if (!name || !/\.pdf$/i.test(name)) continue;
-
-            const baseOriginal = decodeSafe(name.split("/").pop() || name).trim();
-
-            const key = normKey(baseOriginal);
-
-            if (key && baseOriginal) map.set(key, baseOriginal);
-
-          }
-
-          pdfNameMap = map;
-
-          pdfLoadedAt = now;
-
-        }catch{
-
-        }finally{
-
-          pdfLoading = false;
-
-        }
-
-      }
-
-      function makePdfBtn(enabled, it){
-
-        const btn = document.createElement("button");
-
-        btn.type = "button";
-
-        btn.className = "iconBtn";
-
-        btn.dataset.kind = "pdf";
-
-        btn.title = enabled ? "PDF aç" : "PDF yok";
-
-        btn.disabled = !enabled;
-
-        btn.innerHTML = `
-
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-
-            <path d="M14 2v6h6"/>
-
-            <path d="M8 13h8"/>
-
-            <path d="M8 17h6"/>
-
-          </svg>
-
-        `;
-
-        btn.addEventListener("pointerdown", (e) => e.stopPropagation());
-
-        btn.addEventListener("pointerup", (e) => e.stopPropagation());
-
-        btn.addEventListener("click", (e) => {
-
-          e.stopPropagation();
-
-          if (btn.disabled) return;
-
-          const base = getPdfOriginalBasename(it);
-
-          if (!base) return;
-
-          openPdf(it?.title || base, base);
-
-        });
-
-        return btn;
-
-      }
-
-      function enhanceRows(){
-
-        const listEl = document.getElementById("list");
-
-        if (!listEl) return;
-
-        if (typeof window.getVisibleItems !== "function") return;
-
-        const visible = window.getVisibleItems();
-
-        if (!Array.isArray(visible) || !visible.length) return;
-
-        const rows = Array.from(listEl.children).filter(el => el?.classList?.contains("itemRow"));
-
-        const n = Math.min(rows.length, visible.length);
-
-        for (let i = 0; i < n; i++){
-
-          const row = rows[i];
-
-          const it = visible[i];
-
-          if (!row || !it) continue;
-
-          let pdfBtn = row.querySelector("button.iconBtn[data-kind='pdf']");
-
-          const exists = !!getPdfOriginalBasename(it);
-
-          if (!pdfBtn){
-
-            pdfBtn = makePdfBtn(exists, it);
-
-            row.appendChild(pdfBtn);
-
-          } else {
-
-            pdfBtn.disabled = !exists;
-
-            pdfBtn.title = exists ? "PDF aç" : "PDF yok";
-
-          }
-
-        }
-
-      }
-
-      function wrapOnce(fnName, wrapper){
-
-        const orig = window[fnName];
-
-        if (typeof orig !== "function") return;
-
-        if (orig.__pdfWrapped) return;
-
-        const wrapped = wrapper(orig);
-
-        wrapped.__pdfWrapped = true;
-
-        window[fnName] = wrapped;
-
-      }
-
-      function init(){
-
-        try{
-
-          new URL(PDF_PROXY_BASE);
-
-          ensureCss();
-
-          ensureHeader();
-
-          ensureOverlay();
-
-          wrapOnce("loadItems", (orig) => async function(){
-
-            const p = orig.apply(this, arguments);
-
-            try { await p; } catch {}
-
-            loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
-
-            return p;
-
-          });
-
-          wrapOnce("render", (orig) => function(){
-
-            const r = orig.apply(this, arguments);
-
-            ensureCss();
-
-            ensureHeader();
-
-            enhanceRows();
-
-            return r;
-
-          });
-
-          window.addEventListener("resize", () => {
-
-            if (isMobile()) return;
-
-            const ov = document.getElementById("pdfOverlay");
-
-            if (!ov || !ov.classList.contains("open")) return;
-
-            if (!current.fileUrl) return;
-
-            const body = document.getElementById("pdfBody");
-
-            if (!body || body.style.display !== "block") return;
-
-            renderToken.dead = true;
-
-            renderToken = { dead: false };
-
-            renderDesktopPdf(current.fileUrl, current.filename).catch(()=>{});
-
-          });
-
-          loadPdfIndex(false).then(() => window.render && window.render()).catch(()=>{});
-
-        }catch{
-
-        }
-
-      }
-
-      if (document.readyState === "loading"){
-
-        document.addEventListener("DOMContentLoaded", init, { once: true });
-
-      } else {
-
-        init();
-
-      }
-
-    })();
-
-    if (mobileFiltersToggle){
-
-      mobileFiltersToggle.addEventListener("click", (e) => {
-
-        e.stopPropagation();
-
-        toggleMobileFilters();
+        requestAnimationFrame(step);
 
       });
+
+    }
+
+    function stopSkipLoop(){
+
+      if (skipState.rafId){
+
+        cancelAnimationFrame(skipState.rafId);
+
+        skipState.rafId = 0;
+
+      }
+
+    }
+
+    function startSkipLoop(){
+
+      if (!skipSettings.enabled) return;
+
+      if (!skipState.currentMap?.segments?.length) return;
+
+      if (skipState.rafId) return;
+
+      skipState.rafId = requestAnimationFrame(skipLoop);
+
+    }
+
+    function canSkipNow(nowMs){
+
+      if (!skipSettings.enabled) return false;
+
+      if (!skipState.currentMap?.segments?.length) return false;
+
+      if (!playerEl || playerEl.paused || playerEl.seeking) return false;
+
+      if (!Number.isFinite(playerEl.currentTime)) return false;
+
+      if (!Number.isFinite(playerEl.duration) || playerEl.duration <= 0) return false;
+
+      if (segEndTime != null) return false;
+
+      if (skipState.skipInFlight) return false;
+
+      if (nowMs < skipState.manualSuppressUntil) return false;
+
+      if ((nowMs - skipState.lastSkipAt) < Math.max(0, skipSettings.cooldownMs)) return false;
+
+      return true;
+
+    }
+
+    async function performMapSkip(seg){
+
+      if (!seg || skipState.skipInFlight) return false;
+
+      const segLenMs = (seg.end - seg.start) * 1000;
+
+      if (segLenMs < skipSettings.minSegmentMs) return false;
+
+      const current = Number(playerEl.currentTime) || 0;
+
+      const duration = Number(playerEl.duration) || 0;
+
+      const tailKeepSec = (Number(skipSettings.tailKeepMs) || 0) / 1000;
+
+      const resumeOffsetSec = (Number(skipSettings.resumeOffsetMs) || 0) / 1000;
+
+      const maxAutoSeekSec = (Number(skipSettings.maxAutoSeekMs) || 45000) / 1000;
+
+      let target = seg.end - tailKeepSec + resumeOffsetSec;
+
+      target = Math.min(target, seg.start + maxAutoSeekSec);
+
+      if (duration > 0){
+
+        target = Math.min(target, Math.max(0, duration - 0.05));
+
+      }
+
+      if (!(target > current + 0.03)) return false;
+
+      skipState.skipInFlight = true;
+
+      const fadeMs = Math.max(0, Number(skipSettings.fadeMs) || 0);
+
+      const originalVol = Number(playerEl.volume);
+
+      try{
+
+        if (fadeMs > 0){
+
+          await fadePlayerVolume(originalVol, Math.max(0, originalVol * 0.08), Math.floor(fadeMs / 2));
+
+        }
+
+        const before = Number(playerEl.currentTime) || 0;
+
+        playerEl.currentTime = Math.max(0, target);
+
+        const after = Number(playerEl.currentTime) || target;
+
+        const gainedMs = Math.max(0, Math.round((after - before) * 1000));
+
+        skipState.fileSavedMs += gainedMs;
+
+        skipState.sessionSavedMs += gainedMs;
+
+        updateSkipGainUi();
+
+        skipState.manualSuppressUntil = performance.now() + Math.max(35, fadeMs + 25);
+
+        if (fadeMs > 0){
+
+          await fadePlayerVolume(Math.max(0, originalVol * 0.08), originalVol, Math.ceil(fadeMs / 2));
+
+        }
+
+        skipState.lastSkipAt = performance.now();
+
+        return true;
+
+      }catch(err){
+
+        console.warn("performMapSkip failed:", err);
+
+        return false;
+
+      }finally{
+
+        skipState.skipInFlight = false;
+
+      }
+
+    }
+
+    async function skipLoop(){
+
+      skipState.rafId = 0;
+
+      if (!skipSettings.enabled){
+
+        stopSkipLoop();
+
+        return;
+
+      }
+
+      const nowMs = performance.now();
+
+      if (canSkipNow(nowMs)){
+
+        const t = Number(playerEl.currentTime) || 0;
+
+        const seg = findSilenceSegmentAt(t);
+
+        if (seg) await performMapSkip(seg);
+
+      }
+
+      startSkipLoop();
+
+    }
+
+    function syncSkipUi(){
+
+      const open = !skipDrawer.hidden;
+
+      skipDrawerBtn.classList.toggle("on", open || skipSettings.enabled);
+
+      skipDrawerBtn.classList.toggle("breathing", !!skipSettings.enabled);
+
+      skipDrawerBtn.setAttribute("aria-expanded", String(open));
+
+      skipEnableBtn.textContent = "Sessiz atlama: " + (skipSettings.enabled ? "Açık" : "Kapalı");
+
+      skipEnableBtn.classList.toggle("on", !!skipSettings.enabled);
+
+      skipModeLight.classList.toggle("on", skipSettings.mode === "light");
+
+      skipModeBalanced.classList.toggle("on", skipSettings.mode === "balanced");
+
+      skipModeAggressive.classList.toggle("on", skipSettings.mode === "aggressive");
+
+      skipModeUltra.classList.toggle("on", skipSettings.mode === "ultra");
+
+      skipModeMax.classList.toggle("on", skipSettings.mode === "max");
+
+      skipMinGapRange.value = String(skipSettings.minSegmentMs);
+
+      skipMinGapValue.textContent = `${Math.round(skipSettings.minSegmentMs)}ms`;
+
+      skipFadeRange.value = String(skipSettings.fadeMs);
+
+      skipFadeValue.textContent = `${Math.round(skipSettings.fadeMs)}ms`;
+
+      skipEngineLabel.textContent = (skipState.currentMap?.segments?.length || 0)
+
+        ? `MAP ${skipState.currentMap.segments.length}`
+
+        : "MAP";
+
+      updateSkipGainUi();
+
+      if (!skipState.status){
+
+        setSkipStatus(
+
+          (skipState.currentMap?.segments?.length || 0)
+
+            ? `Silence map hazır · ${skipState.currentMap.segments.length} segment`
+
+            : "Silence map bekleniyor…"
+
+        );
+
+      }
+
+    }
+
+    function toggleSkipDrawer(force){
+
+      const shouldOpen = typeof force === "boolean" ? force : skipDrawer.hidden;
+
+      skipDrawer.hidden = !shouldOpen;
+
+      localStorage.setItem(LS.skipDrawerOpen, shouldOpen ? "1" : "0");
+
+      syncSkipUi();
+
+      setTimeout(() => clampPlayerToViewport(), 0);
+
+    }
+
+    function resetSkipRuntimeForNewTrack(){
+
+      stopSkipLoop();
+
+      skipState.skipInFlight = false;
+
+      skipState.lastSkipAt = 0;
+
+      skipState.manualSuppressUntil = performance.now() + 900;
+
+      skipState.fileSavedMs = 0;
+
+      skipState.estimatedGainMs = 0;
+
+      updateSkipGainUi();
+
+    }
+
+    function applySkipPreset(mode){
+
+      if (mode === "light"){
+
+        Object.assign(skipSettings, {
+
+          mode: "light",
+
+          fadeMs: 35,
+
+          tailKeepMs: 0,
+
+          resumeOffsetMs: 80,
+
+          minSegmentMs: 350,
+
+          cooldownMs: 90,
+
+          maxAutoSeekMs: 30000
+
+        });
+
+      } else if (mode === "balanced"){
+
+        Object.assign(skipSettings, {
+
+          mode: "balanced",
+
+          fadeMs: 8,
+
+          tailKeepMs: 0,
+
+          resumeOffsetMs: 140,
+
+          minSegmentMs: 140,
+
+          cooldownMs: 30,
+
+          maxAutoSeekMs: 60000
+
+        });
+
+      } else if (mode === "aggressive"){
+
+        Object.assign(skipSettings, {
+
+          mode: "aggressive",
+
+          fadeMs: 0,
+
+          tailKeepMs: 0,
+
+          resumeOffsetMs: 240,
+
+          minSegmentMs: 60,
+
+          cooldownMs: 8,
+
+          maxAutoSeekMs: 120000
+
+        });
+
+      } else if (mode === "ultra"){
+
+        Object.assign(skipSettings, {
+
+          mode: "ultra",
+
+          fadeMs: 0,
+
+          tailKeepMs: 0,
+
+          resumeOffsetMs: 320,
+
+          minSegmentMs: 30,
+
+          cooldownMs: 3,
+
+          maxAutoSeekMs: 180000
+
+        });
+
+      } else if (mode === "max"){
+
+        Object.assign(skipSettings, {
+
+          mode: "max",
+
+          fadeMs: 0,
+
+          tailKeepMs: 0,
+
+          resumeOffsetMs: 420,
+
+          minSegmentMs: 15,
+
+          cooldownMs: 0,
+
+          maxAutoSeekMs: 240000
+
+        });
+
+      }
+
+      saveSkipSettings();
+
+      recomputeEstimatedGain();
+
+      syncSkipUi();
+
+    }
+
+    skipDrawerBtn.addEventListener("click", (e) => {
+
+      e.stopPropagation();
+
+      toggleSkipDrawer();
+
+    });
+
+    skipEnableBtn.addEventListener("click", async () => {
+
+      skipSettings.enabled = !skipSettings.enabled;
+
+      saveSkipSettings();
+
+      syncSkipUi();
+
+      if (!skipSettings.enabled){
+
+        stopSkipLoop();
+
+        skipState.manualSuppressUntil = performance.now() + 900;
+
+        return;
+
+      }
+
+      const it = items.find((x) => x.id === activeId) || null;
+
+      if (it && (!skipState.currentMap || skipState.currentMapItemId !== it.id)){
+
+        await primeSilenceMapForItem(it);
+
+      }
+
+      if (skipState.currentMap?.segments?.length && !playerEl.paused){
+
+        startSkipLoop();
+
+      }
+
+    });
+
+    skipModeLight.addEventListener("click", () => applySkipPreset("light"));
+
+    skipModeBalanced.addEventListener("click", () => applySkipPreset("balanced"));
+
+    skipModeAggressive.addEventListener("click", () => applySkipPreset("aggressive"));
+
+    skipModeUltra.addEventListener("click", () => applySkipPreset("ultra"));
+
+    skipModeMax.addEventListener("click", () => applySkipPreset("max"));
+
+    skipMinGapRange.addEventListener("input", () => {
+
+      skipSettings.minSegmentMs = Number(skipMinGapRange.value);
+
+      saveSkipSettings();
+
+      recomputeEstimatedGain();
+
+      syncSkipUi();
+
+    });
+
+    skipFadeRange.addEventListener("input", () => {
+
+      skipSettings.fadeMs = Number(skipFadeRange.value);
+
+      saveSkipSettings();
+
+      syncSkipUi();
+
+    });
+
+    playerEl.addEventListener("play", () => {
+
+      if (skipSettings.enabled) startSkipLoop();
+
+    });
+
+    playerEl.addEventListener("pause", () => stopSkipLoop());
+
+    playerEl.addEventListener("ended", () => stopSkipLoop());
+
+    playerEl.addEventListener("seeking", () => {
+
+      skipState.skipInFlight = false;
+
+      skipState.manualSuppressUntil = performance.now() + 900;
+
+    });
+
+    playerEl.addEventListener("seeked", () => {
+
+      if (skipSettings.enabled) startSkipLoop();
+
+    });
+
+    function isPdfOpen(){ return pdfOverlay.classList.contains("open"); }
+
+    function isPdfLikelyAvailable(it){
+
+      return !!pdfUrlForItem(it);
 
     }
 
@@ -8472,7 +8390,11 @@
 
     setTxtBtnUi();
 
-    restoreMobileFiltersState();
+    skipDrawer.hidden = localStorage.getItem(LS.skipDrawerOpen) !== "1";
+
+    syncSkipUi();
+
+    applyToolsHiddenUi();
 
     requestAnimationFrame(() => {
 
@@ -8510,7 +8432,15 @@
 
         try{
 
-          const r = await fetch(url, { method: "GET", cache: "no-store", headers: { "range": "bytes=0-1" } });
+          const r = await fetch(url, {
+
+            method: "GET",
+
+            cache: "no-store",
+
+            headers: { range: "bytes=0-1" }
+
+          });
 
           return r.ok;
 
@@ -8536,7 +8466,13 @@
 
           for (const u of urls){
 
-            if (await headOk(u)){ ok = true; break; }
+            if (await headOk(u)){
+
+              ok = true;
+
+              break;
+
+            }
 
           }
 
@@ -8566,19 +8502,9 @@
 
     }
 
-    setTimeout(clampPlayerToViewport, 0);
-
     loadItems();
 
-    setTimeout(() => {
-
-      restoreMobileFiltersState();
-
-      try{ updateSticky(true); }catch{}
-
-    }, 0);
-
-    setTimeout(() => checkSrtAvailability().catch(()=>{}), 1200);
+    setTimeout(() => checkSrtAvailability().catch(() => {}), 1200);
 
   </script>
 
