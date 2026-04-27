@@ -696,6 +696,24 @@
 
     .itemRow:hover{ background: var(--hover); }
 
+    .itemRow.stuttgRow{
+
+      background: #eaf3ff !important;
+
+    }
+
+    #list .itemRow.stuttgRow:nth-child(even){
+
+      background: #dcecff !important;
+
+    }
+
+    .itemRow.stuttgRow:hover{
+
+      background: #cfe4ff !important;
+
+    }
+
     .itemRow.active{
 
       background: var(--active) !important;
@@ -707,6 +725,14 @@
     }
 
     .itemRow.active:hover{ background: var(--active) !important; }
+
+    .itemRow.stuttgRow.active,
+
+    .itemRow.stuttgRow.active:hover{
+
+      background: var(--active) !important;
+
+    }
 
     .itemRow.active::before{
 
@@ -778,63 +804,63 @@
 
     }
 
-  @media (max-width: 680px){
+    @media (max-width: 680px){
 
-    #scrollArea{ padding: 14px; }
+      #scrollArea{ padding: 14px; }
 
-    .headerRow, .itemRow{
+      .headerRow, .itemRow{
 
-      grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px;
+        grid-template-columns: minmax(0, 1fr) 8ch 46px 34px 34px 46px;
+
+      }
+
+      .title{
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+      }
+
+      #search{ flex: 1 1 100%; }
+
+      .zoomWrap{ margin-left: 0; }
+
+      #mobileFiltersToggle{ display:inline-flex; }
+
+      body.mobileFiltersCollapsed #stickyBar .headerRow{
+
+        grid-template-columns: minmax(0, 1fr) !important;
+
+      }
+
+      body.mobileFiltersCollapsed #stickyBar .headerRow > :not(:first-child){
+
+        display:none !important;
+
+      }
+
+      body.mobileFiltersCollapsed .itemRow{
+
+        grid-template-columns: minmax(0, 1fr) !important;
+
+      }
+
+      body.mobileFiltersCollapsed .itemRow > :not(:first-child){
+
+        display:none !important;
+
+      }
+
+      body.mobileFiltersCollapsed #meta{
+
+        margin: 0 0 8px 2px;
+
+      }
 
     }
-
-    .title{
-
-      white-space: nowrap;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-    }
-
-    #search{ flex: 1 1 100%; }
-
-    .zoomWrap{ margin-left: 0; }
-
-    #mobileFiltersToggle{ display:inline-flex; }
-
-    body.mobileFiltersCollapsed #stickyBar .headerRow{
-
-      grid-template-columns: minmax(0, 1fr) !important;
-
-    }
-
-    body.mobileFiltersCollapsed #stickyBar .headerRow > :not(:first-child){
-
-      display:none !important;
-
-    }
-
-    body.mobileFiltersCollapsed .itemRow{
-
-      grid-template-columns: minmax(0, 1fr) !important;
-
-    }
-
-    body.mobileFiltersCollapsed .itemRow > :not(:first-child){
-
-      display:none !important;
-
-    }
-
-    body.mobileFiltersCollapsed #meta{
-
-      margin: 0 0 8px 2px;
-
-    }
-
-  }
 
     .iconBtn{
 
@@ -5328,9 +5354,7 @@
 
       return btn;
 
-    }
-
-    function render(){
+     function render(){
 
       const visible = getVisibleItems();
 
@@ -5338,7 +5362,7 @@
 
       filterFavBtn.classList.toggle("on", filterFav);
 
-      filterFavBtn.setAttribute("aria-pressed",  String(filterFav));
+      filterFavBtn.setAttribute("aria-pressed", String(filterFav));
 
       setSortIcons();
 
@@ -5357,6 +5381,12 @@
         const row = document.createElement("div");
 
         row.className = "itemRow" + (it.id === selectedId ? " active" : "");
+
+        if (it.src === "STUTTGART"){
+
+          row.classList.add("stuttgRow");
+
+        }
 
         const title = document.createElement("div");
 
